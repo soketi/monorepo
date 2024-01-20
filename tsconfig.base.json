@@ -8,6 +8,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
+    "esModuleInterop": true,
     "target": "es2015",
     "module": "esnext",
     "lib": ["es2020", "dom"],
@@ -15,7 +16,12 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@soketi/brain": ["packages/brain/src/index.ts"],
       "@soketi/connections": ["packages/connections/src/index.ts"],
+      "@soketi/gossiper": ["packages/gossiper/src/index.ts"],
+      "@soketi/p2p": ["packages/p2p/src/index.ts"],
+      "@soketi/routing": ["packages/routing/src/index.ts"],
+      "@soketi/server": ["packages/server/src/index.ts"],
       "@soketi/utils": ["packages/utils/src/index.ts"]
     }
   },

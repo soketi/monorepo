@@ -1,10 +1,21 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "extends": "nx/presets/npm.json",
+  "pluginsConfig": {
+    "@nx/js": {
+      "analyzeSourceFiles": true
+    }
+  },
   "targetDefaults": {
     "build": {
       "cache": true,
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "production",
+        "^production"
+      ]
     },
     "lint": {
       "cache": true,
@@ -17,11 +28,17 @@
     },
     "@nx/vite:test": {
       "cache": true,
-      "inputs": ["default", "^production"]
+      "inputs": [
+        "default",
+        "^production"
+      ]
     }
   },
   "namedInputs": {
-    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals"
+    ],
     "production": [
       "default",
       "!{projectRoot}/.eslintrc.json",
@@ -31,5 +48,5 @@
     ],
     "sharedGlobals": []
   },
-  "nxCloudAccessToken": "ODhiYThlYjYtMTU4Yy00YTMyLWJiOTYtN2Y3ZWYwN2MyMWJhfHJlYWQtd3JpdGU="
+  "nxCloudAccessToken": "Y2YxODE0MzktNGEyNS00YWIxLThkMTItNTlkYWY1MDQwMDdifHJlYWQtd3JpdGU="
 }

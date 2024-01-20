@@ -1,5 +1,5 @@
 {
-  "name": "@soketi-monorepo/source",
+  "name": "@soketi/monorepo",
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "targets": {
     "local-registry": {
