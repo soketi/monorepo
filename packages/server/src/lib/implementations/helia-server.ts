@@ -1,4 +1,4 @@
-import { IpfsGossiper } from '@soketi/gossiper';
+import { IpfsGossiper } from '@soketi/p2p';
 import { ConnectionsPool } from '@soketi/connections';
 import { LocalBrain } from '@soketi/brain';
 import { createHeliaServer } from '@soketi/p2p';

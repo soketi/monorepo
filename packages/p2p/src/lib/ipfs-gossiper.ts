@@ -1,9 +1,9 @@
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string';
 import { Peer } from '@libp2p/interface/src/peer-store';
 
-import { Announcement, Gossiper, type DefaultPayload } from './gossiper';
+import { Announcement, Gossiper, type DefaultPayload } from '@soketi/gossiper';
 import { Connection } from '@soketi/connections';
-import { createHeliaServer } from '@soketi/p2p';
+import { createHeliaServer } from './helia';
 
 export class IpfsGossiper<
   ConnectionID extends Connection['id'] = Connection['id'],

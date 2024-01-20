@@ -2,11 +2,8 @@
   "name": "@soketi/gossiper",
   "version": "0.0.1",
   "dependencies": {
-    "tslib": "^2.3.0",
     "@soketi/connections": "*",
-    "uint8arrays": "4.0.10",
-    "@libp2p/interface": "1.1.2",
-    "@soketi/p2p": "*"
+    "tslib": "^2.3.0"
   },
   "type": "module",
   "main": "./src/index.js",
