@@ -46,7 +46,10 @@
       "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
       "!{projectRoot}/tsconfig.spec.json"
     ],
-    "sharedGlobals": []
+    "sharedGlobals": [
+      "{workspaceRoot}/.github/workflows/ci.yml",
+      "{workspaceRoot}/.github/dependabot.yml"
+    ]
   },
   "nxCloudAccessToken": "Y2YxODE0MzktNGEyNS00YWIxLThkMTItNTlkYWY1MDQwMDdifHJlYWQtd3JpdGU="
 }

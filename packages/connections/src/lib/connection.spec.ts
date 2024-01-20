@@ -20,7 +20,7 @@ beforeEach(() => {
   closes.length = 0;
 });
 
-const newConnection = async (id: string, namespace = 'default') => {
+const newConnection = async (id: string, namespace = 'radio:5ghz') => {
   const nativeConn = {
     send: vitest.fn(),
     close: vitest.fn(),
@@ -38,7 +38,7 @@ const newConnection = async (id: string, namespace = 'default') => {
 
 describe('connection', () => {
   it('works', async () => {
-    const conn = await newConnection('1');
+    const conn = await newConnection('probe:voyager-1');
 
     expect(conn).toBeTruthy();
 
@@ -46,7 +46,7 @@ describe('connection', () => {
 
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    expect(messages).toEqual([{ message: 'hello', id: '1', namespace: 'default' }]);
-    expect(closes).toEqual([{ code: 1000, reason: 'bye', id: '1', namespace: 'default' }]);
+    expect(messages).toEqual([{ message: 'hello', id: 'probe:voyager-1', namespace: 'radio:5ghz' }]);
+    expect(closes).toEqual([{ code: 1000, reason: 'bye', id: 'probe:voyager-1', namespace: 'radio:5ghz' }]);
   });
 });

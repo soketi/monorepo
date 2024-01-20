@@ -20,7 +20,7 @@ beforeEach(() => {
   closes.length = 0;
 });
 
-const newConnection = async (id: string, namespace = 'default') => {
+const newConnection = async (id: string, namespace = 'radio:5ghz') => {
   const nativeConn = {
     send: vitest.fn(),
     close: vitest.fn(),
@@ -65,7 +65,7 @@ describe('websockets router', () => {
       await connections.removeConnection(conn);
     });
 
-    const conn = await newConnection('1');
+    const conn = await newConnection('probe:voyager-1');
 
     await router.handleNewConnection(conn);
     expect(connections.connections.size).toEqual(1);
@@ -93,13 +93,13 @@ describe('websockets router', () => {
       await conn.send(message);
     });
 
-    const conn = await newConnection('1');
+    const conn = await newConnection('probe:voyager-1');
 
     await router.handleNewConnection(conn);
     expect(connections.connections.size).toEqual(1);
 
     await router.handleMessage(conn, 'hello');
-    expect(messages).toEqual([{ message: 'hello', id: '1', namespace: 'default' }]);
+    expect(messages).toEqual([{ message: 'hello', id: 'probe:voyager-1', namespace: 'radio:5ghz' }]);
 
     await router.handleConnectionClosed(conn);
     expect(connections.connections.size).toEqual(0);
@@ -124,13 +124,13 @@ describe('websockets router', () => {
       await conn.send(error);
     });
 
-    const conn = await newConnection('1');
+    const conn = await newConnection('probe:voyager-1');
 
     await router.handleNewConnection(conn);
     expect(connections.connections.size).toEqual(1);
 
     await router.handleError(conn, 'hello');
-    expect(messages).toEqual([{ message: 'hello', id: '1', namespace: 'default' }]);
+    expect(messages).toEqual([{ message: 'hello', id: 'probe:voyager-1', namespace: 'radio:5ghz' }]);
 
     await router.handleConnectionClosed(conn);
     expect(connections.connections.size).toEqual(0);

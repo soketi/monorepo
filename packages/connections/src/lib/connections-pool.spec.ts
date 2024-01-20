@@ -21,7 +21,7 @@ beforeEach(() => {
   closes.length = 0;
 });
 
-const newConnection = async (id: string, namespace = 'default') => {
+const newConnection = async (id: string, namespace = 'radio:5ghz') => {
   const nativeConn = {
     send: vitest.fn(),
     close: vitest.fn(),
@@ -40,9 +40,9 @@ const newConnection = async (id: string, namespace = 'default') => {
 describe('connections pool', () => {
   it('works', async () => {
     const pool = new ConnectionsPool();
-    const conn1 = await newConnection('1');
-    const conn2 = await newConnection('2');
-    const conn3 = await newConnection('3', 'other');
+    const conn1 = await newConnection('probe:voyager-1');
+    const conn2 = await newConnection('earth:jfk-space-center');
+    const conn3 = await newConnection('planet:neptune', 'radio:40ghz');
 
     expect(pool).toBeTruthy();
 
@@ -50,42 +50,42 @@ describe('connections pool', () => {
     await pool.newConnection(conn2);
     await pool.newConnection(conn3);
 
-    await pool.broadcastJsonMessage('default', {
+    await pool.broadcastJsonMessage('radio:5ghz', {
       type: 'hello',
       data: 'world',
     });
 
     expect(messages).toEqual([
-      { message: JSON.stringify({ type: 'hello', data: 'world' }), id: '1', namespace: 'default' },
-      { message: JSON.stringify({ type: 'hello', data: 'world' }), id: '2', namespace: 'default' },
+      { message: JSON.stringify({ type: 'hello', data: 'world' }), id: 'probe:voyager-1', namespace: 'radio:5ghz' },
+      { message: JSON.stringify({ type: 'hello', data: 'world' }), id: 'earth:jfk-space-center', namespace: 'radio:5ghz' },
     ]);
 
-    await pool.broadcastJsonMessage('other', {
+    await pool.broadcastJsonMessage('radio:40ghz', {
       type: 'hello',
       data: 'world',
     });
 
     expect(messages).toEqual([
-      { message: JSON.stringify({ type: 'hello', data: 'world' }), id: '1', namespace: 'default' },
-      { message: JSON.stringify({ type: 'hello', data: 'world' }), id: '2', namespace: 'default' },
-      { message: JSON.stringify({ type: 'hello', data: 'world' }), id: '3', namespace: 'other' },
+      { message: JSON.stringify({ type: 'hello', data: 'world' }), id: 'probe:voyager-1', namespace: 'radio:5ghz' },
+      { message: JSON.stringify({ type: 'hello', data: 'world' }), id: 'earth:jfk-space-center', namespace: 'radio:5ghz' },
+      { message: JSON.stringify({ type: 'hello', data: 'world' }), id: 'planet:neptune', namespace: 'radio:40ghz' },
     ]);
 
-    await pool.closeAll('default', 1000, 'bye');
+    await pool.closeAll('radio:5ghz', 1000, 'bye');
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     expect(closes).toEqual([
-      { code: 1000, reason: 'bye', id: '1', namespace: 'default' },
-      { code: 1000, reason: 'bye', id: '2', namespace: 'default' },
+      { code: 1000, reason: 'bye', id: 'probe:voyager-1', namespace: 'radio:5ghz' },
+      { code: 1000, reason: 'bye', id: 'earth:jfk-space-center', namespace: 'radio:5ghz' },
     ]);
 
-    await pool.closeAll('other', 1000, 'bye');
+    await pool.closeAll('radio:40ghz', 1000, 'bye');
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     expect(closes).toEqual([
-      { code: 1000, reason: 'bye', id: '1', namespace: 'default' },
-      { code: 1000, reason: 'bye', id: '2', namespace: 'default' },
-      { code: 1000, reason: 'bye', id: '3', namespace: 'other' },
+      { code: 1000, reason: 'bye', id: 'probe:voyager-1', namespace: 'radio:5ghz' },
+      { code: 1000, reason: 'bye', id: 'earth:jfk-space-center', namespace: 'radio:5ghz' },
+      { code: 1000, reason: 'bye', id: 'planet:neptune', namespace: 'radio:40ghz' },
     ]);
   });
 });

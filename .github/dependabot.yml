@@ -1,0 +1,16 @@
+enable-beta-ecosystems: true
+version: 2
+
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "05:00"
+    labels:
+      - "semver:minor"
+      - "semver:major"
+    groups:
+      dev:
+        dependency-type: development

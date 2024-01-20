@@ -5,7 +5,7 @@ import { createHeliaServer } from '@soketi/p2p';
 
 import { MicroWebsocketServer } from './micro-websockets-server';
 
-export const startPrebuiltServer = async () => {
+export const prebuiltHeliaServer = async () => {
   const helia = await createHeliaServer();
 
   const connections = new ConnectionsPool();

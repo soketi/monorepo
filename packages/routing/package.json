@@ -2,7 +2,8 @@
   "name": "@soketi/routing",
   "version": "0.0.1",
   "dependencies": {
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "@soketi/connections": "*"
   },
   "type": "module",
   "main": "./src/index.js",

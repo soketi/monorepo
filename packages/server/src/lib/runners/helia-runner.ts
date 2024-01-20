@@ -1,8 +1,8 @@
-import { startPrebuiltServer } from '../implementations/helia-server';
+import { prebuiltHeliaServer } from '../implementations/helia-server';
 
 ;(async () => {
   // Just use the prebuilt server for now.
-  const { helia } = await startPrebuiltServer();
+  const { helia } = await prebuiltHeliaServer();
 
   // Start the server.
   helia.start();
