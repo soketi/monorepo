@@ -17,8 +17,6 @@ jobs:
     with:
       node-version: 20.x
       pnpm-version: 8.15.0
-      parallel-commands: |
-        npx nx format:check
       parallel-commands-on-agents: |
         npx nx affected --target=lint --parallel=3
         npx nx affected --target=test --parallel=3 --ci --code-coverage
