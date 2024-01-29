@@ -14,6 +14,9 @@ dependencies:
   '@chainsafe/libp2p-yamux':
     specifier: ^6.0.1
     version: 6.0.1
+  '@helia/block-brokers':
+    specifier: ^2.0.0
+    version: 2.0.0
   '@libp2p/autonat':
     specifier: ^1.0.10
     version: 1.0.10
@@ -56,9 +59,18 @@ dependencies:
   '@libp2p/websockets':
     specifier: ^8.0.13
     version: 8.0.13
+  blockstore-core:
+    specifier: ^4.3.10
+    version: 4.3.10
+  datastore-core:
+    specifier: ^9.2.7
+    version: 9.2.7
   helia:
     specifier: ^3.0.1
     version: 3.0.1(react-native@0.73.3)
+  libp2p:
+    specifier: ^1.2.1
+    version: 1.2.1
   tslib:
     specifier: ^2.6.2
     version: 2.6.2
@@ -1624,8 +1636,6 @@ packages:
       uint8arraylist: 2.4.8
       uint8arrays: 5.0.1
       wherearewe: 2.0.1
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@chainsafe/libp2p-noise@15.0.0:
@@ -1649,8 +1659,6 @@ packages:
       uint8arraylist: 2.4.8
       uint8arrays: 5.0.1
       wherearewe: 2.0.1
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@chainsafe/libp2p-yamux@6.0.1:
@@ -1975,6 +1983,19 @@ packages:
       - supports-color
     dev: false
 
+  /@helia/block-brokers@2.0.0:
+    resolution: {integrity: sha512-6/SeTaVshPzAgSc+mpsQ1tZWy8BcRGx1PdQdYrjyATYjPVTWG30DSEgCBtqNgyyoWN51rhkWQM9TANL0P6iQIg==}
+    dependencies:
+      '@helia/interface': 4.0.0
+      '@libp2p/interface': 1.1.2
+      interface-blockstore: 5.2.9
+      ipfs-bitswap: 20.0.2
+      multiformats: 13.0.1
+      progress-events: 1.0.0
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
   /@helia/delegated-routing-v1-http-api-client@1.1.2:
     resolution: {integrity: sha512-u+sVdOxFieusZh/AxC8c0lU1micWfAosju7A80n62rdJ1fr1lclkhhrlfaKWIgVOq+pwonEzoOE7QgnTL22tYw==}
     dependencies:
@@ -2004,6 +2025,19 @@ packages:
       interface-datastore: 8.2.10
       interface-store: 5.1.7
       ipfs-bitswap: 20.0.2
+      multiformats: 13.0.1
+      progress-events: 1.0.0
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
+  /@helia/interface@4.0.0:
+    resolution: {integrity: sha512-J8ZGuNac60x1pwMZ7i5rvB9oldnc3rIEhCcZE6vKl5vsDHmlCpG2NmVPM5x1VIfei1JEAygDtfCFUDvGpMxSfw==}
+    dependencies:
+      '@libp2p/interface': 1.1.2
+      interface-blockstore: 5.2.9
+      interface-datastore: 8.2.10
+      interface-store: 5.1.7
       multiformats: 13.0.1
       progress-events: 1.0.0
     transitivePeerDependencies:
@@ -2426,8 +2460,6 @@ packages:
       protons-runtime: 5.2.2
       uint8arraylist: 2.4.8
       uint8arrays: 5.0.1
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@libp2p/crypto@4.0.1:
@@ -2441,8 +2473,6 @@ packages:
       protons-runtime: 5.2.2
       uint8arraylist: 2.4.8
       uint8arrays: 5.0.1
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@libp2p/dcutr@1.0.10:
@@ -2566,8 +2596,6 @@ packages:
       multiformats: 13.0.1
       sanitize-filename: 1.6.3
       uint8arrays: 5.0.1
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@libp2p/logger@3.1.0:
@@ -2636,8 +2664,6 @@ packages:
       uint8-varint: 2.0.3
       uint8arraylist: 2.4.8
       uint8arrays: 5.0.1
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@libp2p/peer-collections@5.1.5:
@@ -2645,8 +2671,6 @@ packages:
     dependencies:
       '@libp2p/interface': 1.1.2
       '@libp2p/peer-id': 4.0.5
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@libp2p/peer-id-factory@4.0.5:
@@ -2658,8 +2682,6 @@ packages:
       protons-runtime: 5.2.2
       uint8arraylist: 2.4.8
       uint8arrays: 5.0.1
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@libp2p/peer-id@3.0.6:
@@ -2678,8 +2700,6 @@ packages:
       '@libp2p/interface': 1.1.2
       multiformats: 13.0.1
       uint8arrays: 5.0.1
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@libp2p/peer-record@7.0.7:
@@ -2766,8 +2786,6 @@ packages:
       it-stream-types: 2.0.1
       prom-client: 15.1.0
       uint8arraylist: 2.4.8
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@libp2p/pubsub-peer-discovery@10.0.2:
