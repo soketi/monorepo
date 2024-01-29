@@ -1,8 +1,8 @@
 {
   "name": "@soketi/cli",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "dependencies": {
-    "@soketi/server": "*",
+    "@soketi/server": "0.1.0",
     "yargs": "*"
   },
   "type": "module",

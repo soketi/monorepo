@@ -1,6 +1,6 @@
 {
   "name": "@soketi/p2p",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "dependencies": {
     "@chainsafe/libp2p-noise": "*",
     "@chainsafe/libp2p-gossipsub": "*",
@@ -18,8 +18,8 @@
     "@libp2p/prometheus-metrics": "*",
     "@libp2p/perf": "*",
     "@libp2p/pnet": "*",
-    "@soketi/connections": "*",
-    "@soketi/gossiper": "*",
+    "@soketi/connections": "0.1.0",
+    "@soketi/gossiper": "0.1.0",
     "blockstore-core": "*",
     "datastore-core": "*",
     "helia": "*",

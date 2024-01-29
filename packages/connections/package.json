@@ -1,9 +1,9 @@
 {
   "name": "@soketi/connections",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "dependencies": {
     "tslib": "^2.3.0",
-    "@soketi/utils": "*"
+    "@soketi/utils": "0.1.0"
   },
   "type": "module",
   "main": "./src/index.js",
