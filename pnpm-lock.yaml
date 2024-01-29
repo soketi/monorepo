@@ -88,6 +88,9 @@ devDependencies:
   '@libp2p/interface':
     specifier: 1.1.2
     version: 1.1.2
+  '@nx/devkit':
+    specifier: 17.2.8
+    version: 17.2.8(nx@17.2.8)
   '@nx/esbuild':
     specifier: ^17.3.0
     version: 17.3.0(@swc-node/register@1.6.8)(@swc/core@1.3.107)(@types/node@18.16.9)(esbuild@0.19.12)(nx@17.2.8)(typescript@5.2.2)(verdaccio@5.29.0)
@@ -159,7 +162,7 @@ devDependencies:
     version: 29.7.0
   ngx-deploy-npm:
     specifier: 8.0.0
-    version: 8.0.0(@nx/devkit@17.3.0)(tslib@2.6.2)
+    version: 8.0.0(@nx/devkit@17.2.8)(tslib@2.6.2)
   nx:
     specifier: 17.2.8
     version: 17.2.8(@swc-node/register@1.6.8)(@swc/core@1.3.107)
@@ -1636,6 +1639,8 @@ packages:
       uint8arraylist: 2.4.8
       uint8arrays: 5.0.1
       wherearewe: 2.0.1
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   /@chainsafe/libp2p-noise@15.0.0:
@@ -1659,6 +1664,8 @@ packages:
       uint8arraylist: 2.4.8
       uint8arrays: 5.0.1
       wherearewe: 2.0.1
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   /@chainsafe/libp2p-yamux@6.0.1:
@@ -2460,6 +2467,8 @@ packages:
       protons-runtime: 5.2.2
       uint8arraylist: 2.4.8
       uint8arrays: 5.0.1
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   /@libp2p/crypto@4.0.1:
@@ -2473,6 +2482,8 @@ packages:
       protons-runtime: 5.2.2
       uint8arraylist: 2.4.8
       uint8arrays: 5.0.1
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   /@libp2p/dcutr@1.0.10:
@@ -2596,6 +2607,8 @@ packages:
       multiformats: 13.0.1
       sanitize-filename: 1.6.3
       uint8arrays: 5.0.1
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   /@libp2p/logger@3.1.0:
@@ -2664,6 +2677,8 @@ packages:
       uint8-varint: 2.0.3
       uint8arraylist: 2.4.8
       uint8arrays: 5.0.1
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   /@libp2p/peer-collections@5.1.5:
@@ -2671,6 +2686,8 @@ packages:
     dependencies:
       '@libp2p/interface': 1.1.2
       '@libp2p/peer-id': 4.0.5
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   /@libp2p/peer-id-factory@4.0.5:
@@ -2682,6 +2699,8 @@ packages:
       protons-runtime: 5.2.2
       uint8arraylist: 2.4.8
       uint8arrays: 5.0.1
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   /@libp2p/peer-id@3.0.6:
@@ -2700,6 +2719,8 @@ packages:
       '@libp2p/interface': 1.1.2
       multiformats: 13.0.1
       uint8arrays: 5.0.1
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   /@libp2p/peer-record@7.0.7:
@@ -2786,6 +2807,8 @@ packages:
       it-stream-types: 2.0.1
       prom-client: 15.1.0
       uint8arraylist: 2.4.8
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   /@libp2p/pubsub-peer-discovery@10.0.2:
@@ -5571,7 +5594,7 @@ packages:
   /builtins@5.0.1:
     resolution: {integrity: sha512-qwVpFEHNfhYJIzNRBvd2C1kyo6jz3ZSMPyyuR47OPdiKWlbYnZNyDWuyR175qDnAJLiCo5fBBqPb3RiXgWlkOQ==}
     dependencies:
-      semver: 7.5.3
+      semver: 7.5.4
     dev: true
 
   /bytes@3.0.0:
@@ -9021,14 +9044,14 @@ packages:
     engines: {node: '>= 0.4.0'}
     dev: false
 
-  /ngx-deploy-npm@8.0.0(@nx/devkit@17.3.0)(tslib@2.6.2):
+  /ngx-deploy-npm@8.0.0(@nx/devkit@17.2.8)(tslib@2.6.2):
     resolution: {integrity: sha512-/sjvCYXp7fDc45uYsRwxCfJGZh82n2e7B3eazlS4jx6rE1DOvRtlbJIqptHL486iIDd63yCAQOXqeFqGvgGtRw==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       '@nx/devkit': "^16.0.0 ||\_^17.0.0 ||\_^18.0.0"
       tslib: ^2.3.0
     dependencies:
-      '@nx/devkit': 17.3.0(nx@17.2.8)
+      '@nx/devkit': 17.2.8(nx@17.2.8)
       tslib: 2.6.2
     dev: true
 
