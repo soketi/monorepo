@@ -1,4 +1,4 @@
-name: CI - integration test pnpm
+name: CI
 
 on:
   push:
@@ -6,26 +6,50 @@ on:
       - main
   pull_request:
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.number || github.ref }}
-  cancel-in-progress: true
-
 jobs:
   main:
-    name: NX
-    uses: nrwl/ci/.github/workflows/nx-cloud-main.yml@v0.14.0
-    with:
-      node-version: 20.x
-      pnpm-version: 8.15.0
-      parallel-commands-on-agents: |
-        npx nx affected --target=lint --parallel=3
-        npx nx affected --target=test --parallel=3 --ci --code-coverage
-        npx nx affected --target=build --parallel=3
+    runs-on: ubuntu-latest
 
-  agents:
-    name: NX Cloud Agent
-    uses: nrwl/ci/.github/workflows/nx-cloud-agents.yml@v0.14.0
-    with:
-      node-version: 20.x
-      pnpm-version: 8.15.0
-      number-of-agents: 3
+    name: Testing (Node ${{ matrix.node-version }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version:
+          - 20.x
+
+    steps:
+      - uses: actions/checkout@v4
+        name: Checkout
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v2
+        name: Setup pnpm
+        with:
+          version: 8
+
+      - uses: actions/setup-node@v3
+        name: Setup Node.js ${{ matrix.node-version }}
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
+
+      - name: Cache PNPM dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # This is needed for nx affected to work when CI is running on a PR
+      - uses: nrwl/nx-set-shas@v3
+        name: Set NX's SHAs
+
+      - name: Run tests
+        run: |
+          npx nx affected -t lint,test,build --parallel=3 --configuration=ci --code-coverage
