@@ -26,7 +26,7 @@
     "@libp2p/websockets": "^8.0.11",
     "helia": "^3.0.1",
     "uint8arrays": "4.0.10",
-    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.39.0"
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.41.0"
   },
   "devDependencies": {
     "@libp2p/interface": "1.1.2",
