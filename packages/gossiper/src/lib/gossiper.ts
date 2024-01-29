@@ -11,11 +11,12 @@ export type DefaultPayload<
 export abstract class Gossiper<
   ConnectionID extends Connection['id'] = Connection['id'],
   AnnouncementPayload extends DefaultPayload<ConnectionID> = DefaultPayload<ConnectionID>,
-> implements IGossiper<ConnectionID, AnnouncementPayload> {
+> implements IGossiper<ConnectionID, AnnouncementPayload>
+{
   announcementHandlers = new Map<
     string,
     GossipTopicHandler<Announcement<AnnouncementPayload>>
-  >;
+  >();
 
   async peers(): Promise<Record<string, unknown>> {
     return {
@@ -52,9 +53,7 @@ export abstract class Gossiper<
     });
   }
 
-  async unsubscribeFromNamespace(
-    namespace: string,
-  ): Promise<void> {
+  async unsubscribeFromNamespace(namespace: string): Promise<void> {
     this.announcementHandlers.delete(`${namespace}`);
   }
 
@@ -102,15 +101,15 @@ export abstract class Gossiper<
   }
 }
 
-export type GossipTopicHandler<Announcement>  = {
+export interface GossipTopicHandler<Announcement> {
   namespace: string;
   handler?: (data: Announcement) => Promise<unknown>;
-};
+}
 
-export type Announcement<AnnouncementPayload = Record<string, unknown>> = {
+export interface Announcement<AnnouncementPayload = Record<string, unknown>> {
   event: string;
   payload?: AnnouncementPayload;
-};
+}
 
 export interface IGossiper<
   ConnectionID extends Connection['id'] = Connection['id'],
@@ -123,9 +122,7 @@ export interface IGossiper<
     handler?: (data: Announcement<AnnouncementPayload>) => Promise<void>,
   ): Promise<void>;
 
-  unsubscribeFromNamespace(
-    namespace: string,
-  ): Promise<void>;
+  unsubscribeFromNamespace(namespace: string): Promise<void>;
 
   announce(
     namespace: string,
@@ -154,4 +151,4 @@ export interface IGossiper<
 
   startup(): Promise<void>;
   cleanup(): Promise<void>;
-};
+}

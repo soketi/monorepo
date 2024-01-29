@@ -4,8 +4,11 @@ import { Connection } from './connection';
 export class ConnectionsPool<
   Message = unknown,
   C extends Connection = Connection,
-> implements IConnectionsPool<C, Message> {
+> implements IConnectionsPool<C, Message>
+{
   readonly connections = new Map<string, Map<C['id'], C>>();
+
+  declare readonly connectionId: C['id'];
 
   namespace(namespace: string): Map<C['id'], C> {
     if (!this.hasNamespace(namespace)) {
@@ -23,7 +26,10 @@ export class ConnectionsPool<
     this.namespace(conn.namespace).set(conn.id, conn);
   }
 
-  async removeConnection(conn: C, onEmptyNamespace?: () => Promise<void>): Promise<void> {
+  async removeConnection(
+    conn: C,
+    onEmptyNamespace?: () => Promise<void>,
+  ): Promise<void> {
     conn.clearTimeout();
     this.namespace(conn.namespace).delete(conn.id);
 
@@ -36,16 +42,22 @@ export class ConnectionsPool<
     }
   }
 
-  async drainConnections(maxPerSecond = 1000, message?: string, code?: number): Promise<void> {
+  async drainConnections(
+    maxPerSecond = 1000,
+    message?: string,
+    code?: number,
+  ): Promise<void> {
     await Promise.allSettled(
-      [...this.connections.keys()].map(ns => {
+      [...this.connections.keys()].map((ns) => {
         // Take all connections and drain them.
         chunkArray<C>(
           [...(this.namespace(ns).values() || [])],
           maxPerSecond,
-          async chunks => {
-            await Promise.allSettled(chunks.map(conn => conn.close(code, message)));
-            await new Promise(resolve => setTimeout(resolve, 1e3));
+          async (chunks) => {
+            await Promise.allSettled(
+              chunks.map((conn) => conn.close(code, message)),
+            );
+            await new Promise((resolve) => setTimeout(resolve, 1e3));
           },
         ).then(() => {
           this.connections.delete(ns);
@@ -54,7 +66,7 @@ export class ConnectionsPool<
     );
   }
 
-  async getConnection(namespace: string, id: C['id']): Promise<C|undefined> {
+  async getConnection(namespace: string, id: C['id']): Promise<C | undefined> {
     return this.namespace(namespace).get(id);
   }
 
@@ -67,25 +79,23 @@ export class ConnectionsPool<
     (await this.getConnection(namespace, id))?.close(code, reason);
   }
 
-  async closeAll(namespace: string, code?: number, reason?: string): Promise<void> {
+  async closeAll(
+    namespace: string,
+    code?: number,
+    reason?: string,
+  ): Promise<void> {
     await Promise.allSettled(
-      [...(this.namespace(namespace).values() || [])].map(conn => conn.close(code, reason)),
+      [...(this.namespace(namespace).values() || [])].map((conn) =>
+        conn.close(code, reason),
+      ),
     );
   }
 
-  async send<M>(
-    namespace: string,
-    id: C['id'],
-    message: M,
-  ): Promise<void> {
+  async send<M>(namespace: string, id: C['id'], message: M): Promise<void> {
     (await this.getConnection(namespace, id))?.send<M>(message);
   }
 
-  async sendJson<M>(
-    namespace: string,
-    id: C['id'],
-    message: M,
-  ): Promise<void> {
+  async sendJson<M>(namespace: string, id: C['id'], message: M): Promise<void> {
     (await this.getConnection(namespace, id))?.sendJson<M>(message);
   }
 
@@ -96,7 +106,11 @@ export class ConnectionsPool<
     code?: number,
     reason?: string,
   ): Promise<void> {
-    (await this.getConnection(namespace, id))?.sendError<M>(message, code, reason);
+    (await this.getConnection(namespace, id))?.sendError<M>(
+      message,
+      code,
+      reason,
+    );
   }
 
   async sendThenClose<M>(
@@ -106,7 +120,11 @@ export class ConnectionsPool<
     code?: number,
     reason?: string,
   ): Promise<void> {
-    (await this.getConnection(namespace, id))?.sendThenClose<M>(message, code, reason);
+    (await this.getConnection(namespace, id))?.sendThenClose<M>(
+      message,
+      code,
+      reason,
+    );
   }
 
   async sendJsonThenClose<M>(
@@ -116,7 +134,11 @@ export class ConnectionsPool<
     code?: number,
     reason?: string,
   ): Promise<void> {
-    (await this.getConnection(namespace, id))?.sendJsonThenClose<M>(message, code, reason);
+    (await this.getConnection(namespace, id))?.sendJsonThenClose<M>(
+      message,
+      code,
+      reason,
+    );
   }
 
   async sendErrorThenClose<M>(
@@ -126,7 +148,11 @@ export class ConnectionsPool<
     code?: number,
     reason?: string,
   ): Promise<void> {
-    (await this.getConnection(namespace, id))?.sendErrorThenClose<M>(message, code, reason);
+    (await this.getConnection(namespace, id))?.sendErrorThenClose<M>(
+      message,
+      code,
+      reason,
+    );
   }
 
   async broadcastMessage<M>(
@@ -136,7 +162,9 @@ export class ConnectionsPool<
   ): Promise<void> {
     if (!exceptions || exceptions.length === 0) {
       return Promise.allSettled(
-        [...(this.namespace(namespace).values() || [])].map(conn => conn.send<M>(message)),
+        [...(this.namespace(namespace).values() || [])].map((conn) =>
+          conn.send<M>(message),
+        ),
       ).then(() => {
         //
       });
@@ -144,8 +172,8 @@ export class ConnectionsPool<
 
     await Promise.allSettled(
       [...(this.namespace(namespace).values() || [])]
-        .filter(conn => !exceptions.includes(conn.id))
-        .map(conn => conn.send<M>(message)),
+        .filter((conn) => !exceptions.includes(conn.id))
+        .map((conn) => conn.send<M>(message)),
     );
   }
 
@@ -156,7 +184,9 @@ export class ConnectionsPool<
   ): Promise<void> {
     if (!exceptions || exceptions.length === 0) {
       return Promise.allSettled(
-        [...(this.namespace(namespace).values() || [])].map(conn => conn.sendJson<M>(message)),
+        [...(this.namespace(namespace).values() || [])].map((conn) =>
+          conn.sendJson<M>(message),
+        ),
       ).then(() => {
         //
       });
@@ -164,8 +194,8 @@ export class ConnectionsPool<
 
     await Promise.allSettled(
       [...(this.namespace(namespace).values() || [])]
-        .filter(conn => !exceptions.includes(conn.id))
-        .map(conn => conn.sendJson<M>(message)),
+        .filter((conn) => !exceptions.includes(conn.id))
+        .map((conn) => conn.sendJson<M>(message)),
     );
   }
 
@@ -178,7 +208,9 @@ export class ConnectionsPool<
   ): Promise<void> {
     if (!exceptions || exceptions.length === 0) {
       return Promise.allSettled(
-        [...(this.namespace(namespace).values() || [])].map(conn => conn.sendError<M>(message, code, reason)),
+        [...(this.namespace(namespace).values() || [])].map((conn) =>
+          conn.sendError<M>(message, code, reason),
+        ),
       ).then(() => {
         //
       });
@@ -186,15 +218,15 @@ export class ConnectionsPool<
 
     await Promise.allSettled(
       [...(this.namespace(namespace).values() || [])]
-        .filter(conn => !exceptions.includes(conn.id))
-        .map(conn => conn.sendError<M>(message, code, reason)),
+        .filter((conn) => !exceptions.includes(conn.id))
+        .map((conn) => conn.sendError<M>(message, code, reason)),
     );
   }
 }
 
 export interface IConnectionsPool<
   C extends Connection = Connection,
-  Message = unknown
+  Message = unknown,
 > {
   readonly connections: Map<string, Map<C['id'], C>>;
 
@@ -202,18 +234,54 @@ export interface IConnectionsPool<
   hasNamespace(namespace: string): boolean;
 
   newConnection(conn: C): Promise<void>;
-  removeConnection(conn: C, onEmptyNamespace?: () => Promise<void>): Promise<void>;
-  drainConnections(timeout: number, message?: string, code?: number): Promise<void>;
-  getConnection(namespace: string, id: C['id']): Promise<C|undefined>;
+  removeConnection(
+    conn: C,
+    onEmptyNamespace?: () => Promise<void>,
+  ): Promise<void>;
+  drainConnections(
+    timeout: number,
+    message?: string,
+    code?: number,
+  ): Promise<void>;
+  getConnection(namespace: string, id: C['id']): Promise<C | undefined>;
 
-  close(namespace: string, id: C['id'], code?: number, reason?: string): Promise<void>;
+  close(
+    namespace: string,
+    id: C['id'],
+    code?: number,
+    reason?: string,
+  ): Promise<void>;
   closeAll(namespace: string, code?: number, reason?: string): Promise<void>;
 
   send<M = Message>(namespace: string, id: C['id'], message: M): Promise<void>;
-  sendJson<M = Message>(namespace: string, id: C['id'], message: M): Promise<void>;
-  sendError<M = Message>(namepsace: string, id: C['id'], message: M, code?: number, reason?: string): Promise<void>;
+  sendJson<M = Message>(
+    namespace: string,
+    id: C['id'],
+    message: M,
+  ): Promise<void>;
+  sendError<M = Message>(
+    namepsace: string,
+    id: C['id'],
+    message: M,
+    code?: number,
+    reason?: string,
+  ): Promise<void>;
 
-  broadcastMessage<M = Message>(namespace: string, message: M, exceptions?: C['id'][]): Promise<void>;
-  broadcastJsonMessage<M = Message>(namespace: string, message: M, exceptions?: C['id'][]): Promise<void>;
-  broadcastError<M = Message>(namespace: string, message: M, code?: number, reason?: string, exceptions?: C['id'][]): Promise<void>;
+  broadcastMessage<M = Message>(
+    namespace: string,
+    message: M,
+    exceptions?: C['id'][],
+  ): Promise<void>;
+  broadcastJsonMessage<M = Message>(
+    namespace: string,
+    message: M,
+    exceptions?: C['id'][],
+  ): Promise<void>;
+  broadcastError<M = Message>(
+    namespace: string,
+    message: M,
+    code?: number,
+    reason?: string,
+    exceptions?: C['id'][],
+  ): Promise<void>;
 }

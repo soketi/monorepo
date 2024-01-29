@@ -3,7 +3,7 @@ import { ConnectionsPool } from '@soketi/connections';
 import { LocalBrain } from '@soketi/brain';
 import { createHeliaServer } from '@soketi/p2p';
 
-import { MicroWebsocketServer } from './micro-websockets-server';
+import { MicroWebsocketServer } from './implementations/micro-websockets-server';
 
 export const prebuiltHeliaServer = async () => {
   const helia = await createHeliaServer();
@@ -12,11 +12,11 @@ export const prebuiltHeliaServer = async () => {
   const brain = new LocalBrain();
   const gossiper = new IpfsGossiper(helia);
 
-  const server = new MicroWebsocketServer(
+  const server = new MicroWebsocketServer({
     brain,
     gossiper,
     connections,
-  );
+  });
 
   helia.libp2p.addEventListener('start', async () => {
     // After libp2p starts, we need to start the server.

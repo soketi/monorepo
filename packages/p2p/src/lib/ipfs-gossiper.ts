@@ -9,7 +9,9 @@ export class IpfsGossiper<
   ConnectionID extends Connection['id'] = Connection['id'],
   AnnouncementPayload extends DefaultPayload<ConnectionID> = DefaultPayload<ConnectionID>,
 > extends Gossiper<ConnectionID, AnnouncementPayload> {
-  constructor(protected readonly node: Awaited<ReturnType<typeof createHeliaServer>>) {
+  constructor(
+    protected readonly node: Awaited<ReturnType<typeof createHeliaServer>>,
+  ) {
     super();
   }
 
@@ -17,7 +19,7 @@ export class IpfsGossiper<
   override async peers(): Promise<Record<string, any>> {
     const peerToObject = (peer: Peer) => ({
       id: peer.id.toString(),
-      addrs: peer.addresses.map(addr => addr.multiaddr),
+      addrs: peer.addresses.map((addr) => addr.multiaddr),
       metadata: [...peer.metadata].map(([key, value]) => ({
         key,
         value: uint8ArrayToString(value),
@@ -31,8 +33,10 @@ export class IpfsGossiper<
 
     return {
       me: this.node.libp2p.peerId.toString(),
-      peerStore: (await this.node.libp2p.peerStore.all()).map(peer => peerToObject(peer)),
-      connections: this.node.libp2p.getConnections().map(conn => ({
+      peerStore: (await this.node.libp2p.peerStore.all()).map((peer) =>
+        peerToObject(peer),
+      ),
+      connections: this.node.libp2p.getConnections().map((conn) => ({
         id: conn.id,
         remotePeer: conn.remotePeer.toString(),
         remoteAddr: conn.remoteAddr.toString(),
@@ -43,7 +47,7 @@ export class IpfsGossiper<
         multiplexer: conn.multiplexer,
         encryption: conn.encryption,
         direction: conn.direction,
-        streams: conn.streams.map(stream => ({
+        streams: conn.streams.map((stream) => ({
           id: stream.id,
           direction: stream.direction,
           timeline: stream.timeline,
@@ -80,9 +84,7 @@ export class IpfsGossiper<
     this.node.libp2p.services.pubsub.subscribe(`${namespace}`);
   }
 
-  override async unsubscribeFromNamespace(
-    namespace: string,
-  ): Promise<void> {
+  override async unsubscribeFromNamespace(namespace: string): Promise<void> {
     super.unsubscribeFromNamespace(namespace);
     this.node.libp2p.services.pubsub.unsubscribe(`${namespace}`);
   }
@@ -93,7 +95,11 @@ export class IpfsGossiper<
     this.node.libp2p.services.pubsub.addEventListener(
       'message',
       async ({ detail }) => {
-        console.log(`received: ${new TextDecoder().decode(detail.data)} on ns ${detail.topic}`);
+        console.log(
+          `received: ${new TextDecoder().decode(detail.data)} on ns ${
+            detail.topic
+          }`,
+        );
 
         await this.handleAnnouncement(
           detail.topic,

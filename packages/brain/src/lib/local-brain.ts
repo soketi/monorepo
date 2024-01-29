@@ -1,7 +1,7 @@
 import { Brain, BrainRecord } from './brain';
 
 export class LocalBrain<Value = unknown> extends Brain<Value> {
-  memory: Map<string, BrainRecord<Value>> = new Map();
+  memory = new Map<string, BrainRecord<Value>>();
   cleanupInterval: NodeJS.Timeout;
 
   constructor() {
@@ -9,20 +9,22 @@ export class LocalBrain<Value = unknown> extends Brain<Value> {
 
     this.cleanupInterval = setInterval(() => {
       for (const [key, { ttlSeconds, setTime }] of [...this.memory]) {
-        const currentTime = parseInt((new Date().getTime() / 1000) as unknown as string);
+        const currentTime = parseInt(
+          (new Date().getTime() / 1000) as unknown as string,
+        );
 
-        if (ttlSeconds > 0 && (setTime + ttlSeconds) <= currentTime) {
+        if (ttlSeconds > 0 && setTime + ttlSeconds <= currentTime) {
           this.memory.delete(key);
         }
       }
     }, 1_000);
   }
 
-  async get(key: string): Promise<Value|undefined> {
+  async get(key: string): Promise<Value | undefined> {
     return (await this.getWithMetadata(key))?.value;
   }
 
-  async getWithMetadata(key: string): Promise<BrainRecord<Value>|undefined> {
+  async getWithMetadata(key: string): Promise<BrainRecord<Value> | undefined> {
     return this.memory.get(key);
   }
 

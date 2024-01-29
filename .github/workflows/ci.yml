@@ -1,4 +1,4 @@
-name: CI
+name: CI - integration test pnpm
 
 on:
   push:
@@ -6,47 +6,26 @@ on:
       - main
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   main:
-    runs-on: ubuntu-latest
+    name: NX
+    uses: nrwl/ci/.github/workflows/nx-cloud-main.yml@v0.14.0
+    with:
+      node-version: 20.x
+      parallel-commands: |
+        npx nx format:check
+      parallel-commands-on-agents: |
+        npx nx affected --target=lint --parallel=3
+        npx nx affected --target=test --parallel=3 --ci --code-coverage
+        npx nx affected --target=build --parallel=3
 
-    name: Testing (Node ${{ matrix.node-version }})
-
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version:
-          - 18.x
-          - 20.x
-
-    steps:
-      - uses: actions/checkout@v4
-        name: Checkout
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-node@v3
-        name: Setup Node.js ${{ matrix.node-version }}
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-
-      - name: Cache NPM dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install dependencies
-        run: npm ci
-
-      # This is needed for nx affected to work when CI is running on a PR
-      - uses: nrwl/nx-set-shas@v3
-        name: Set NX's SHAs
-
-      - name: Run tests
-        run: |
-          npx nx format:check
-          npx nx affected -t lint,test,build --parallel=3 --configuration=ci
+  agents:
+    name: NX Cloud Agent
+    uses: nrwl/ci/.github/workflows/nx-cloud-agents.yml@v0.14.0
+    with:
+      node-version: 20.x
+      number-of-agents: 3

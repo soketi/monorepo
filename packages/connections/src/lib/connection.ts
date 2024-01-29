@@ -6,7 +6,8 @@ export class Connection<
   ID extends IConnection['id'] = IConnection['id'],
   Message = JsonStringifiable,
   NativeConnection = NativeWebsocket,
-> implements IConnection<ID, Message, NativeConnection> {
+> implements IConnection<ID, Message, NativeConnection>
+{
   closed = false;
   timeout!: NodeJS.Timeout;
 
@@ -46,7 +47,11 @@ export class Connection<
     }
   }
 
-  async sendError<M>(message: M, code?: number, reason?: string): Promise<void> {
+  async sendError<M>(
+    message: M,
+    code?: number,
+    reason?: string,
+  ): Promise<void> {
     await this.send<M>(message);
     this.close(code, reason);
   }
@@ -61,17 +66,29 @@ export class Connection<
     }, 100);
   }
 
-  async sendThenClose<M>(message: M, code?: number, reason?: string): Promise<void> {
+  async sendThenClose<M>(
+    message: M,
+    code?: number,
+    reason?: string,
+  ): Promise<void> {
     await this.send<M>(message);
     this.close(code, reason);
   }
 
-  async sendJsonThenClose<M>(message: M, code?: number, reason?: string): Promise<void> {
+  async sendJsonThenClose<M>(
+    message: M,
+    code?: number,
+    reason?: string,
+  ): Promise<void> {
     await this.sendJson<M>(message);
     this.close(code, reason);
   }
 
-  async sendErrorThenClose<M>(message: M, code?: number, reason?: string): Promise<void> {
+  async sendErrorThenClose<M>(
+    message: M,
+    code?: number,
+    reason?: string,
+  ): Promise<void> {
     await this.sendError<M>(message, code, reason);
     this.close(code, reason);
   }
@@ -100,8 +117,16 @@ export interface IConnection<
   sendError<M>(message: M, code?: number, reason?: string): Promise<void>;
   close(code?: number, reason?: string): Promise<void>;
   sendThenClose<M>(message: M, code?: number, reason?: string): Promise<void>;
-  sendJsonThenClose<M>(message: M, code?: number, reason?: string): Promise<void>;
-  sendErrorThenClose<M>(message: M, code?: number, reason?: string): Promise<void>;
+  sendJsonThenClose<M>(
+    message: M,
+    code?: number,
+    reason?: string,
+  ): Promise<void>;
+  sendErrorThenClose<M>(
+    message: M,
+    code?: number,
+    reason?: string,
+  ): Promise<void>;
   toRemote(remoteInstanceId?: ID): RemoteConnection<ID>;
   clearTimeout(): Promise<void>;
   updateTimeout(): Promise<void>;

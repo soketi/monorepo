@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Connection, ConnectionsPool, NativeWebsocket } from '@soketi/connections';
+import {
+  Connection,
+  ConnectionsPool,
+  NativeWebsocket,
+} from '@soketi/connections';
 import { WebsocketsRouter } from './websockets-router';
 
 const messages: {
@@ -9,16 +13,11 @@ const messages: {
 }[] = [];
 
 const closes: {
-  code: number|undefined;
-  reason: string|undefined;
+  code: number | undefined;
+  reason: string | undefined;
   id: string;
   namespace: string;
 }[] = [];
-
-beforeEach(() => {
-  messages.length = 0;
-  closes.length = 0;
-});
 
 const newConnection = async (id: string, namespace = 'radio:5ghz') => {
   const nativeConn = {
@@ -37,6 +36,11 @@ const newConnection = async (id: string, namespace = 'radio:5ghz') => {
 };
 
 describe('websockets router', () => {
+  beforeEach(() => {
+    messages.length = 0;
+    closes.length = 0;
+  });
+
   it('works', async () => {
     const router = new WebsocketsRouter();
 
@@ -99,7 +103,9 @@ describe('websockets router', () => {
     expect(connections.connections.size).toEqual(1);
 
     await router.handleMessage(conn, 'hello');
-    expect(messages).toEqual([{ message: 'hello', id: 'probe:voyager-1', namespace: 'radio:5ghz' }]);
+    expect(messages).toEqual([
+      { message: 'hello', id: 'probe:voyager-1', namespace: 'radio:5ghz' },
+    ]);
 
     await router.handleConnectionClosed(conn);
     expect(connections.connections.size).toEqual(0);
@@ -130,7 +136,9 @@ describe('websockets router', () => {
     expect(connections.connections.size).toEqual(1);
 
     await router.handleError(conn, 'hello');
-    expect(messages).toEqual([{ message: 'hello', id: 'probe:voyager-1', namespace: 'radio:5ghz' }]);
+    expect(messages).toEqual([
+      { message: 'hello', id: 'probe:voyager-1', namespace: 'radio:5ghz' },
+    ]);
 
     await router.handleConnectionClosed(conn);
     expect(connections.connections.size).toEqual(0);

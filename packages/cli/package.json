@@ -1,0 +1,13 @@
+{
+  "name": "@soketi/cli",
+  "version": "0.0.1",
+  "dependencies": {
+    "@soketi/server": "*",
+    "yargs": "*"
+  },
+  "type": "module",
+  "main": "./index.js",
+  "bin": {
+    "soketi": "./index.js"
+  }
+}

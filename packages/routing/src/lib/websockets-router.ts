@@ -10,27 +10,21 @@ export class WebsocketsRouter<
   ON_MESSAGE = 'onMessage';
   ON_ERROR = 'onError';
 
-  onNewConnection(
-    handler: Handler<[C, ...any[]]>,
-  ): void {
+  onNewConnection(handler: Handler<[C, ...any[]]>): void {
     this.registerHandler(this.ON_NEW_CONNECTION, handler);
   }
 
   onConnectionClosed(
-    handler: Handler<[C, number|undefined, any, ...any[]]>,
+    handler: Handler<[C, number | undefined, any, ...any[]]>,
   ): void {
     this.registerHandler(this.ON_CONNECTION_CLOSED, handler);
   }
 
-  onMessage(
-    handler: Handler<[C, any, ...any[]]>,
-  ): void {
+  onMessage(handler: Handler<[C, any, ...any[]]>): void {
     this.registerHandler(this.ON_MESSAGE, handler);
   }
 
-  onError(
-    handler: Handler<[C, any, ...any[]]>,
-  ): void {
+  onError(handler: Handler<[C, any, ...any[]]>): void {
     this.registerHandler(this.ON_ERROR, handler);
   }
 
@@ -44,7 +38,13 @@ export class WebsocketsRouter<
     message?: any,
     ...args: any[]
   ): Promise<void> {
-    await this.handle(this.ON_CONNECTION_CLOSED, connection, code, message, ...args);
+    await this.handle(
+      this.ON_CONNECTION_CLOSED,
+      connection,
+      code,
+      message,
+      ...args,
+    );
   }
 
   async handleMessage(
@@ -55,11 +55,7 @@ export class WebsocketsRouter<
     await this.handle(this.ON_MESSAGE, connection, message, ...args);
   }
 
-  async handleError(
-    connection: C,
-    error: any,
-    ...args: any[]
-  ): Promise<void> {
+  async handleError(connection: C, error: any, ...args: any[]): Promise<void> {
     await this.handle(this.ON_ERROR, connection, error, ...args);
   }
 }

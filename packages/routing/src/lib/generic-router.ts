@@ -5,9 +5,7 @@ export type Handler<Args extends any[] = any[], ReturnT = any> = (
 ) => ReturnT | Promise<ReturnT>;
 
 export class GenericRouter<H extends Handler = Handler> {
-  constructor(
-    protected handlers: Record<string, any> = {},
-  ) {
+  constructor(protected handlers: Record<string, any> = {}) {
     //
   }
 
@@ -18,7 +16,7 @@ export class GenericRouter<H extends Handler = Handler> {
   async handle<Handler extends H = H>(
     name: string,
     ...args: Parameters<Handler>
-  ): Promise<ReturnType<Handler>|undefined> {
+  ): Promise<ReturnType<Handler> | undefined> {
     const handler = this.handlers[name];
 
     if (!handler) {

@@ -5,13 +5,14 @@ export const chunkArray = async <Item = unknown>(
 ): Promise<void> => {
   Array.from(
     { length: Math.ceil(array.length / chunkSize) },
-    async (_, index) => await callback(array.slice(index * chunkSize, (index + 1) * chunkSize)),
+    async (_, index) =>
+      await callback(array.slice(index * chunkSize, (index + 1) * chunkSize)),
   );
 };
 
 export const ab2str = (buffer: ArrayBuffer): string => {
   return Buffer.from(buffer).toString('utf-8');
-}
+};
 
 export const waitGracefullyFor = async (
   callback: () => Promise<boolean>,
@@ -37,9 +38,24 @@ export const waitGracefullyFor = async (
       }
     }, interval);
   });
-}
+};
 
-export type JsonObject = { [key: string]: JsonValue; };
-export type JsonArray = JsonValue[]|JsonObject[];
-export type JsonValue = Date|RegExp|string|number|boolean|null|JsonObject|unknown;
-export type JsonStringifiable = JsonObject|JsonObject[]|JsonArray|JsonArray[];
+export type JsonObject = Record<string, unknown>;
+
+export type JsonArray = JsonValue[] | JsonObject[];
+
+export type JsonValue =
+  | Date
+  | RegExp
+  | string
+  | number
+  | boolean
+  | null
+  | JsonObject
+  | unknown;
+
+export type JsonStringifiable =
+  | JsonObject
+  | JsonObject[]
+  | JsonArray
+  | JsonArray[];

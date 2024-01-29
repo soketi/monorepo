@@ -9,16 +9,11 @@ const messages: {
 }[] = [];
 
 const closes: {
-  code: number|undefined;
-  reason: string|undefined;
+  code: number | undefined;
+  reason: string | undefined;
   id: string;
   namespace: string;
 }[] = [];
-
-beforeEach(() => {
-  messages.length = 0;
-  closes.length = 0;
-});
 
 const newConnection = async (id: string, namespace = 'radio:5ghz') => {
   const nativeConn = {
@@ -37,6 +32,11 @@ const newConnection = async (id: string, namespace = 'radio:5ghz') => {
 };
 
 describe('connection', () => {
+  beforeEach(() => {
+    messages.length = 0;
+    closes.length = 0;
+  });
+
   it('works', async () => {
     const conn = await newConnection('probe:voyager-1');
 
@@ -44,9 +44,18 @@ describe('connection', () => {
 
     await conn.sendThenClose('hello', 1000, 'bye');
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    expect(messages).toEqual([{ message: 'hello', id: 'probe:voyager-1', namespace: 'radio:5ghz' }]);
-    expect(closes).toEqual([{ code: 1000, reason: 'bye', id: 'probe:voyager-1', namespace: 'radio:5ghz' }]);
+    expect(messages).toEqual([
+      { message: 'hello', id: 'probe:voyager-1', namespace: 'radio:5ghz' },
+    ]);
+    expect(closes).toEqual([
+      {
+        code: 1000,
+        reason: 'bye',
+        id: 'probe:voyager-1',
+        namespace: 'radio:5ghz',
+      },
+    ]);
   });
 });

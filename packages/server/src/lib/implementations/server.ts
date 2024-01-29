@@ -1,19 +1,41 @@
 import { Brain } from '@soketi/brain';
 import { ConnectionsPool } from '@soketi/connections';
 import { Gossiper } from '@soketi/gossiper';
+import { GenericRouter, Handler, WebsocketsRouter } from '@soketi/routing';
+
+export interface ServerOptions<
+  ConnectionsPoolT extends ConnectionsPool = ConnectionsPool,
+  BrainT extends Brain = Brain,
+  GossiperT extends Gossiper = Gossiper,
+  HttpHandler extends Handler = Handler,
+> {
+  connections: ConnectionsPoolT;
+  brain: BrainT;
+  gossiper: GossiperT;
+  httpRouter?: GenericRouter<HttpHandler>;
+}
 
 export abstract class Server<
-  CPool extends ConnectionsPool = ConnectionsPool,
-  B extends Brain = Brain,
-  G extends Gossiper = Gossiper,
-  StopOptions = unknown|undefined
+  ConnectionsPoolT extends ConnectionsPool = ConnectionsPool,
+  BrainT extends Brain = Brain,
+  GossiperT extends Gossiper = Gossiper,
+  HttpHandler extends Handler = Handler,
+  StopOptions = unknown | undefined,
 > {
+  public readonly connections: ConnectionsPoolT;
+  public readonly brain: BrainT;
+  public readonly gossiper: GossiperT;
+  private readonly httpRouter: GenericRouter = new GenericRouter<HttpHandler>();
+  private readonly wsRouter: WebsocketsRouter = new WebsocketsRouter();
+
+  // TODO: Implement Router.
   constructor(
-    public readonly brain: B,
-    public readonly gossiper: G,
-    public readonly connections: CPool,
+    options: ServerOptions<ConnectionsPoolT, BrainT, GossiperT, HttpHandler>,
   ) {
-    //
+    this.connections = options.connections;
+    this.brain = options.brain;
+    this.gossiper = options.gossiper;
+    this.httpRouter = options.httpRouter || new GenericRouter<HttpHandler>();
   }
 
   async start(signalHandler?: () => Promise<void>): Promise<void> {
@@ -39,7 +61,7 @@ export abstract class Server<
   }
 
   async closeServer(): Promise<void> {
-    //
+    // After connections got drained and cleaned up, we handled the server shutdown.
   }
 
   async drainConnections(): Promise<void> {
@@ -68,7 +90,7 @@ export abstract class Server<
       await this.stop();
     });
 
-    process.on('uncaughtException', async error => {
+    process.on('uncaughtException', async (error) => {
       console.error(`Uncaught exception: ${error}`);
 
       if (handler) {

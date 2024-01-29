@@ -17,9 +17,11 @@
     "baseUrl": ".",
     "paths": {
       "@soketi/brain": ["packages/brain/src/index.ts"],
+      "@soketi/cli": ["packages/cli/src/index.ts"],
       "@soketi/connections": ["packages/connections/src/index.ts"],
       "@soketi/gossiper": ["packages/gossiper/src/index.ts"],
       "@soketi/p2p": ["packages/p2p/src/index.ts"],
+      "@soketi/protocols": ["packages/protocols/src/index.ts"],
       "@soketi/routing": ["packages/routing/src/index.ts"],
       "@soketi/server": ["packages/server/src/index.ts"],
       "@soketi/utils": ["packages/utils/src/index.ts"]
