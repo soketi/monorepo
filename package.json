@@ -33,7 +33,7 @@
     "libp2p": "^1.2.1",
     "tslib": "^2.6.2",
     "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.39.0",
-    "uint8arrays": "4.0.10",
+    "uint8arrays": "5.0.1",
     "yargs": "^17.7.2"
   },
   "devDependencies": {

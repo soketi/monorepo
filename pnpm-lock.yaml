@@ -78,8 +78,8 @@ dependencies:
     specifier: github:uNetworking/uWebSockets.js#v20.39.0
     version: github.com/uNetworking/uWebSockets.js/ec37cb6444a284c4a0a8d50041a23a4bac9e5715
   uint8arrays:
-    specifier: 4.0.10
-    version: 4.0.10
+    specifier: 5.0.1
+    version: 5.0.1
   yargs:
     specifier: ^17.7.2
     version: 17.7.2
