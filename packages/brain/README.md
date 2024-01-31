@@ -1,5 +1,10 @@
 # @soketi/brain
 
+[![Version](https://img.shields.io/npm/v/@soketi/brain)](https://www.npmjs.com/package/@soketi/brain)
+[![Total Downloads](https://img.shields.io/npm/dt/@soketi/brain)](https://www.npmjs.com/package/@soketi/brain)
+[![License](https://img.shields.io/npm/l/@soketi/brain)](https://www.npmjs.com/package/@soketi/brain)
+[![License](https://img.shields.io/npm/collaborators/@soketi/brain)](https://www.npmjs.com/package/@soketi/brain)
+
 `@soketi/brain` is an abstraction package that handles the caching of data in memory.
 
 ## Usage

@@ -1,5 +1,10 @@
 # @soketi/routing
 
+[![Version](https://img.shields.io/npm/v/@soketi/routing)](https://www.npmjs.com/package/@soketi/routing)
+[![Total Downloads](https://img.shields.io/npm/dt/@soketi/routing)](https://www.npmjs.com/package/@soketi/routing)
+[![License](https://img.shields.io/npm/l/@soketi/routing)](https://www.npmjs.com/package/@soketi/routing)
+[![License](https://img.shields.io/npm/collaborators/@soketi/routing)](https://www.npmjs.com/package/@soketi/routing)
+
 `@soketi/routing` is a package that contains the routing logic for the soketipfs server, as well as the logic for handling custom events in the network.
 
 ## Usage

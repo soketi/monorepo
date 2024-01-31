@@ -1,6 +1,7 @@
 # soketipfs — Real-Time 🤝 Web3
 
 [![Discord](https://img.shields.io/discord/957380329985958038?color=%235865F2&label=Discord&logo=discord&logoColor=%23fff)](https://discord.gg/VgfKCQydjb)
+[![CI](https://github.com/soketi/monorepo/actions/workflows/ci.yml/badge.svg)](https://github.com/soketi/monorepo/actions/workflows/ci.yml)
 
 soketipfs is a framework for building distributed applications using Websockets. It is built on top of [uWebSockets.js](https://github.com/uNetworking/uWebSockets.js) and uses the IPFS networking protocol via [Helia](https://github.com/ipfs/helia).
 

@@ -1,5 +1,10 @@
 # @soketi/connections
 
+[![Version](https://img.shields.io/npm/v/@soketi/connections)](https://www.npmjs.com/package/@soketi/connections)
+[![Total Downloads](https://img.shields.io/npm/dt/@soketi/connections)](https://www.npmjs.com/package/@soketi/connections)
+[![License](https://img.shields.io/npm/l/@soketi/connections)](https://www.npmjs.com/package/@soketi/connections)
+[![License](https://img.shields.io/npm/collaborators/@soketi/connections)](https://www.npmjs.com/package/@soketi/connections)
+
 `@soketi/connections` is an abstraction package that handles the connections over the WebSockets server.
 
 ## Usage

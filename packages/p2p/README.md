@@ -1,5 +1,10 @@
 # p2p
 
+[![Version](https://img.shields.io/npm/v/@soketi/p2p)](https://www.npmjs.com/package/@soketi/p2p)
+[![Total Downloads](https://img.shields.io/npm/dt/@soketi/p2p)](https://www.npmjs.com/package/@soketi/p2p)
+[![License](https://img.shields.io/npm/l/@soketi/p2p)](https://www.npmjs.com/package/@soketi/p2p)
+[![License](https://img.shields.io/npm/collaborators/@soketi/p2p)](https://www.npmjs.com/package/@soketi/p2p)
+
 > Docs are WIP
 
 This library was generated with [Nx](https://nx.dev).
