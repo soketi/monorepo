@@ -1,14 +1,14 @@
 {
   "name": "@soketi/server",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "dependencies": {
     "tslib": "^2.3.0",
-    "@soketi/gossiper": "0.1.1",
-    "@soketi/connections": "0.1.1",
-    "@soketi/brain": "0.1.1",
-    "@soketi/p2p": "0.1.1",
-    "@soketi/routing": "0.1.1",
-    "@soketi/utils": "0.1.1",
+    "@soketi/gossiper": "0.1.2",
+    "@soketi/connections": "0.1.2",
+    "@soketi/brain": "0.1.2",
+    "@soketi/p2p": "0.1.2",
+    "@soketi/routing": "0.1.2",
+    "@soketi/utils": "0.1.2",
     "uWebSockets.js": "*"
   },
   "type": "module",

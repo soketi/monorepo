@@ -9,13 +9,8 @@
   "targetDefaults": {
     "build": {
       "cache": true,
-      "dependsOn": [
-        "^build"
-      ],
-      "inputs": [
-        "production",
-        "^production"
-      ]
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
     },
     "lint": {
       "cache": true,
@@ -28,34 +23,20 @@
     },
     "@nx/vite:test": {
       "cache": true,
-      "inputs": [
-        "default",
-        "^production"
-      ]
+      "inputs": ["default", "^production"]
     },
-    "@nx/jest:jest": {
+    "@nx/eslint:lint": {
       "cache": true,
       "inputs": [
         "default",
-        "^production",
-        "{workspaceRoot}/jest.preset.js"
-      ],
-      "options": {
-        "passWithNoTests": true
-      },
-      "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
-      }
+        "{workspaceRoot}/.eslintrc.json",
+        "{workspaceRoot}/.eslintignore",
+        "{workspaceRoot}/eslint.config.js"
+      ]
     }
   },
   "namedInputs": {
-    "default": [
-      "{projectRoot}/**/*",
-      "sharedGlobals"
-    ],
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "production": [
       "default",
       "!{projectRoot}/.eslintrc.json",
@@ -70,6 +51,26 @@
       "{workspaceRoot}/.github/workflows/ci.yml",
       "{workspaceRoot}/.github/dependabot.yml"
     ]
+  },
+  "release": {
+    "projectsRelationship": "fixed",
+    "projects": ["packages/*"],
+    "changelog": {
+      "workspaceChangelog": false,
+      "projectChangelogs": {
+        "createRelease": "github"
+      }
+    },
+    "version": {
+      "generatorOptions": {
+        "currentVersionResolver": "git-tag",
+        "specifierSource": "conventional-commits"
+      }
+    },
+    "git": {
+      "commit": true,
+      "tag": true
+    }
   },
   "nxCloudAccessToken": "Y2YxODE0MzktNGEyNS00YWIxLThkMTItNTlkYWY1MDQwMDdifHJlYWQtd3JpdGU="
 }
