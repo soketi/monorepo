@@ -46,11 +46,20 @@ jobs:
 
       - name: Print Environment Info
         run: npx nx report
-        shell: bash
+
+      # This is needed for nx affected to work when CI is running on a PR
+      - uses: nrwl/nx-set-shas@v3
+        name: Set NX's SHAs
+
+      - name: Run workflow
+        run: |
+          npx nx run-many -t lint,test,build --parallel=3 --configuration=ci --code-coverage
 
       - name: Publish packages
-        run: npx nx release publish
-        shell: bash
+        run: |
+          npx nx release $GITHUB_REF_NAME --yes
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
+          NPM_ACCESS_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
           NPM_CONFIG_PROVENANCE: true

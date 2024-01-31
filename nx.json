@@ -54,12 +54,11 @@
   },
   "release": {
     "projectsRelationship": "fixed",
+    "releaseTagPattern": "{version}",
     "projects": ["packages/*"],
     "changelog": {
       "workspaceChangelog": false,
-      "projectChangelogs": {
-        "createRelease": "github"
-      }
+      "projectChangelogs": true
     },
     "version": {
       "generatorOptions": {
