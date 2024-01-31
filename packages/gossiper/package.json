@@ -1,8 +1,8 @@
 {
   "name": "@soketi/gossiper",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "dependencies": {
-    "@soketi/connections": "0.1.3",
+    "@soketi/connections": "0.1.4",
     "tslib": "^2.3.0"
   },
   "type": "module",
