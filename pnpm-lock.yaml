@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@chainsafe/libp2p-gossipsub':
-    specifier: ^11.1.0
-    version: 11.1.0
+    specifier: ^11.2.0
+    version: 11.2.0
   '@chainsafe/libp2p-noise':
     specifier: ^14.1.0
     version: 14.1.0
@@ -1594,11 +1594,11 @@ packages:
   /@chainsafe/is-ip@2.0.2:
     resolution: {integrity: sha512-ndGqEMG1W5WkGagaqOZHpPU172AGdxr+LD15sv3WIUvT5oCFUrG1Y0CW/v2Egwj4JXEvSibaIIIqImsm98y1nA==}
 
-  /@chainsafe/libp2p-gossipsub@11.1.0:
-    resolution: {integrity: sha512-6baEtpC9gu5D9bXv86zIdNIOekKgQPV3KRWvnsldtsKpiWtUv6K2mLsl3wsDi0nW/c3zxTAneaJMTLQoSXysJQ==}
+  /@chainsafe/libp2p-gossipsub@11.2.0:
+    resolution: {integrity: sha512-VymXl4Z4qEIUxH4FjgbcVqyuapVHhzrJxADO4t84QOOWv9f8uQYV+c0cgwjneOW3XyTYBOHaZqyTHTngTrKjtQ==}
     engines: {npm: '>=8.7.0'}
     dependencies:
-      '@libp2p/crypto': 3.0.4
+      '@libp2p/crypto': 4.0.1
       '@libp2p/interface': 1.1.2
       '@libp2p/interface-internal': 1.0.7
       '@libp2p/peer-id': 4.0.5
@@ -1609,10 +1609,10 @@ packages:
       it-length-prefixed: 9.0.4
       it-pipe: 3.0.1
       it-pushable: 3.2.3
-      multiformats: 12.1.3
+      multiformats: 13.0.1
       protobufjs: 7.2.6
       uint8arraylist: 2.4.8
-      uint8arrays: 4.0.10
+      uint8arrays: 5.0.1
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -1639,8 +1639,6 @@ packages:
       uint8arraylist: 2.4.8
       uint8arrays: 5.0.1
       wherearewe: 2.0.1
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@chainsafe/libp2p-noise@15.0.0:
@@ -2047,8 +2045,6 @@ packages:
       interface-store: 5.1.7
       multiformats: 13.0.1
       progress-events: 1.0.0
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@humanwhocodes/config-array@0.11.14:
@@ -2467,8 +2463,6 @@ packages:
       protons-runtime: 5.2.2
       uint8arraylist: 2.4.8
       uint8arrays: 5.0.1
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@libp2p/crypto@4.0.1:
@@ -2677,8 +2671,6 @@ packages:
       uint8-varint: 2.0.3
       uint8arraylist: 2.4.8
       uint8arrays: 5.0.1
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@libp2p/peer-collections@5.1.5:
@@ -2686,8 +2678,6 @@ packages:
     dependencies:
       '@libp2p/interface': 1.1.2
       '@libp2p/peer-id': 4.0.5
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@libp2p/peer-id-factory@4.0.5:
@@ -2719,8 +2709,6 @@ packages:
       '@libp2p/interface': 1.1.2
       multiformats: 13.0.1
       uint8arrays: 5.0.1
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@libp2p/peer-record@7.0.7:
@@ -2807,8 +2795,6 @@ packages:
       it-stream-types: 2.0.1
       prom-client: 15.1.0
       uint8arraylist: 2.4.8
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@libp2p/pubsub-peer-discovery@10.0.2:
@@ -6842,7 +6828,7 @@ packages:
   /helia@3.0.1(react-native@0.73.3):
     resolution: {integrity: sha512-Uf9h2RQuiyZxQkBXmbV9HF9/ILSWellXDuSk9Qwn+hRwtlIuEmaHW2HIRHXoaUF9A+WBPplLmiShaYtbaOgbMQ==}
     dependencies:
-      '@chainsafe/libp2p-gossipsub': 11.1.0
+      '@chainsafe/libp2p-gossipsub': 11.2.0
       '@chainsafe/libp2p-noise': 14.1.0
       '@chainsafe/libp2p-yamux': 6.0.1
       '@helia/block-brokers': 1.0.0
