@@ -5,7 +5,7 @@ export type DefaultPayload<
   T = Record<string, unknown>,
 > = {
   connectionId?: ConnectionID;
-  message?: string;
+  message?: ArrayBuffer;
 } & T;
 
 export abstract class Gossiper<

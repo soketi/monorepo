@@ -1,30 +1,66 @@
-import { createLibp2p } from 'libp2p';
+import { createLibp2p, Libp2p, type Libp2pOptions } from 'libp2p';
 import { createHelia } from 'helia';
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string';
 
 import { MemoryBlockstore } from 'blockstore-core';
 import { MemoryDatastore } from 'datastore-core';
-import { bitswap } from '@helia/block-brokers';
+import { bitswap, trustlessGateway } from '@helia/block-brokers';
 
 import { tcp } from '@libp2p/tcp';
 import { webSockets } from '@libp2p/websockets';
-import { identify } from '@libp2p/identify';
+import { Identify, identify } from '@libp2p/identify';
 import { mplex } from '@libp2p/mplex';
 import { mdns } from '@libp2p/mdns';
 import { autoNAT } from '@libp2p/autonat';
 import { dcutr } from '@libp2p/dcutr';
-import { kadDHT } from '@libp2p/kad-dht';
+import { KadDHT, kadDHT } from '@libp2p/kad-dht';
 import {
   circuitRelayTransport,
   circuitRelayServer,
+  CircuitRelayService,
 } from '@libp2p/circuit-relay-v2';
 import { prometheusMetrics } from '@libp2p/prometheus-metrics';
-import { perf } from '@libp2p/perf';
+import { Perf, perf } from '@libp2p/perf';
 import { preSharedKey } from '@libp2p/pnet';
 
 import { noise } from '@chainsafe/libp2p-noise';
-import { gossipsub } from '@chainsafe/libp2p-gossipsub';
+import { gossipsub, GossipsubEvents } from '@chainsafe/libp2p-gossipsub';
+import { PubSub } from '@libp2p/interface';
 
-const heliaServer = async () =>
+export type HeliaOptions = Parameters<typeof createHelia>[0];
+
+export interface HeliaServerOptions {
+  listen?: NonNullable<Libp2pOptions['addresses']>['listen'];
+  swarmKey?: string;
+  maxConnectionsPerPeer?: number;
+  trustlessGateways?: string[];
+}
+
+export const createHeliaServer: (options?: HeliaServerOptions) => ReturnType<
+  typeof createHelia<
+    Libp2p<{
+      perf: Perf;
+      identify: Identify;
+      autoNAT: unknown;
+      dcutr: unknown;
+      circuitRelay: CircuitRelayService;
+      dht: KadDHT;
+      pubsub: PubSub<GossipsubEvents>;
+    }>
+  >
+> = async (
+  {
+    listen,
+    swarmKey,
+    maxConnectionsPerPeer,
+    trustlessGateways,
+  }: HeliaServerOptions = {
+    listen: ['/ip4/0.0.0.0/tcp/0', '/ip4/0.0.0.0/tcp/0/ws'],
+    swarmKey: undefined,
+    maxConnectionsPerPeer: 200,
+    trustlessGateways: [],
+  },
+) =>
   createHelia({
     start: false,
     blockstore: new MemoryBlockstore(),
@@ -32,6 +68,9 @@ const heliaServer = async () =>
     blockBrokers: [
       bitswap({
         statsEnabled: true,
+      }),
+      trustlessGateway({
+        gateways: trustlessGateways,
       }),
     ],
     libp2p: await createLibp2p({
@@ -41,22 +80,21 @@ const heliaServer = async () =>
         version: '',
       },
       addresses: {
-        listen: process.env['SOKETI_P2P_ADDRESSES']?.split(',') || [
-          '/ip4/0.0.0.0/tcp/0',
-          '/ip4/0.0.0.0/tcp/0/ws',
-        ],
+        listen: listen,
       },
       streamMuxers: [mplex()],
-      connectionProtector: preSharedKey({
-        psk: new TextEncoder().encode(process.env['SOKETI_SWARM_KEY']),
-        enabled: process.env['SOKETI_SWARM_KEY'] !== undefined,
-      }),
+      connectionProtector: swarmKey
+        ? preSharedKey({
+            psk: uint8ArrayFromString(swarmKey as string, 'base16'),
+            enabled: swarmKey !== undefined,
+          })
+        : undefined,
       transports: [
         tcp({
           inboundSocketInactivityTimeout: 3_600 * 24, // 1 day
           outboundSocketInactivityTimeout: 3_600 * 24, // 1 day
           socketCloseTimeout: 3 * 60_000, // 3 minutes
-          maxConnections: 200,
+          maxConnections: maxConnectionsPerPeer,
         }),
         webSockets({
           //
@@ -118,5 +156,3 @@ const heliaServer = async () =>
       },
     }),
   });
-
-export const createHeliaServer = heliaServer;

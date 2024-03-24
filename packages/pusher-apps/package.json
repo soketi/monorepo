@@ -1,0 +1,11 @@
+{
+  "name": "@soketi/pusher-apps",
+  "version": "0.1.4",
+  "dependencies": {
+    "@soketi/utils": "0.1.4",
+    "tslib": "^2.3.0"
+  },
+  "type": "module",
+  "main": "./src/index.js",
+  "typings": "./src/index.d.ts"
+}

@@ -59,3 +59,14 @@ export type JsonStringifiable =
   | JsonObject[]
   | JsonArray
   | JsonArray[];
+
+export type BinaryMessage =
+  | ArrayBuffer
+  | Uint8Array
+  | Int8Array
+  | Uint16Array
+  | Int16Array
+  | Uint32Array
+  | Int32Array
+  | Float32Array
+  | Float64Array;

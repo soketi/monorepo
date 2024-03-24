@@ -1,33 +1,33 @@
-import { chunkArray } from '@soketi/utils';
+import { JsonStringifiable, chunkArray } from '@soketi/utils';
 import { Connection } from './connection';
 
 export class ConnectionsPool<
-  Message = unknown,
-  C extends Connection = Connection,
-> implements IConnectionsPool<C, Message>
+  MessageT extends JsonStringifiable = JsonStringifiable,
+  ConnectionT extends Connection = Connection,
+> implements IConnectionsPool<ConnectionT, MessageT>
 {
-  readonly connections = new Map<string, Map<C['id'], C>>();
+  readonly connections = new Map<string, Map<ConnectionT['id'], ConnectionT>>();
 
-  declare readonly connectionId: C['id'];
+  declare readonly connectionId: ConnectionT['id'];
 
-  namespace(namespace: string): Map<C['id'], C> {
+  namespace(namespace: string): Map<ConnectionT['id'], ConnectionT> {
     if (!this.hasNamespace(namespace)) {
-      this.connections.set(namespace, new Map<string, C>());
+      this.connections.set(namespace, new Map<string, ConnectionT>());
     }
 
-    return this.connections.get(namespace) as Map<string, C>;
+    return this.connections.get(namespace) as Map<string, ConnectionT>;
   }
 
   hasNamespace(namespace: string): boolean {
     return this.connections.has(namespace);
   }
 
-  async newConnection(conn: C): Promise<void> {
+  async newConnection(conn: ConnectionT): Promise<void> {
     this.namespace(conn.namespace).set(conn.id, conn);
   }
 
   async removeConnection(
-    conn: C,
+    conn: ConnectionT,
     onEmptyNamespace?: () => Promise<void>,
   ): Promise<void> {
     conn.clearTimeout();
@@ -50,7 +50,7 @@ export class ConnectionsPool<
     await Promise.allSettled(
       [...this.connections.keys()].map((ns) => {
         // Take all connections and drain them.
-        chunkArray<C>(
+        chunkArray<ConnectionT>(
           [...(this.namespace(ns).values() || [])],
           maxPerSecond,
           async (chunks) => {
@@ -66,13 +66,16 @@ export class ConnectionsPool<
     );
   }
 
-  async getConnection(namespace: string, id: C['id']): Promise<C | undefined> {
+  async getConnection(
+    namespace: string,
+    id: ConnectionT['id'],
+  ): Promise<ConnectionT | undefined> {
     return this.namespace(namespace).get(id);
   }
 
   async close(
     namespace: string,
-    id: C['id'],
+    id: ConnectionT['id'],
     code?: number,
     reason?: string,
   ): Promise<void> {
@@ -91,17 +94,25 @@ export class ConnectionsPool<
     );
   }
 
-  async send<M>(namespace: string, id: C['id'], message: M): Promise<void> {
+  async send<M>(
+    namespace: string,
+    id: ConnectionT['id'],
+    message: M,
+  ): Promise<void> {
     (await this.getConnection(namespace, id))?.send<M>(message);
   }
 
-  async sendJson<M>(namespace: string, id: C['id'], message: M): Promise<void> {
+  async sendJson<M>(
+    namespace: string,
+    id: ConnectionT['id'],
+    message: M,
+  ): Promise<void> {
     (await this.getConnection(namespace, id))?.sendJson<M>(message);
   }
 
   async sendError<M>(
     namespace: string,
-    id: C['id'],
+    id: ConnectionT['id'],
     message: M,
     code?: number,
     reason?: string,
@@ -115,7 +126,7 @@ export class ConnectionsPool<
 
   async sendThenClose<M>(
     namespace: string,
-    id: C['id'],
+    id: ConnectionT['id'],
     message: M,
     code?: number,
     reason?: string,
@@ -129,7 +140,7 @@ export class ConnectionsPool<
 
   async sendJsonThenClose<M>(
     namespace: string,
-    id: C['id'],
+    id: ConnectionT['id'],
     message: M,
     code?: number,
     reason?: string,
@@ -143,7 +154,7 @@ export class ConnectionsPool<
 
   async sendErrorThenClose<M>(
     namespace: string,
-    id: C['id'],
+    id: ConnectionT['id'],
     message: M,
     code?: number,
     reason?: string,
@@ -158,7 +169,7 @@ export class ConnectionsPool<
   async broadcastMessage<M>(
     namespace: string,
     message: M,
-    exceptions?: C['id'][],
+    exceptions?: ConnectionT['id'][],
   ): Promise<void> {
     if (!exceptions || exceptions.length === 0) {
       return Promise.allSettled(
@@ -180,7 +191,7 @@ export class ConnectionsPool<
   async broadcastJsonMessage<M>(
     namespace: string,
     message: M,
-    exceptions?: C['id'][],
+    exceptions?: ConnectionT['id'][],
   ): Promise<void> {
     if (!exceptions || exceptions.length === 0) {
       return Promise.allSettled(
@@ -204,7 +215,7 @@ export class ConnectionsPool<
     message: M,
     code?: number,
     reason?: string,
-    exceptions?: C['id'][],
+    exceptions?: ConnectionT['id'][],
   ): Promise<void> {
     if (!exceptions || exceptions.length === 0) {
       return Promise.allSettled(
@@ -225,17 +236,17 @@ export class ConnectionsPool<
 }
 
 export interface IConnectionsPool<
-  C extends Connection = Connection,
-  Message = unknown,
+  ConnectionT extends Connection = Connection,
+  MessageT extends JsonStringifiable = JsonStringifiable,
 > {
-  readonly connections: Map<string, Map<C['id'], C>>;
+  readonly connections: Map<string, Map<ConnectionT['id'], ConnectionT>>;
 
-  namespace(namespace: string): Map<string, C>;
+  namespace(namespace: string): Map<string, ConnectionT>;
   hasNamespace(namespace: string): boolean;
 
-  newConnection(conn: C): Promise<void>;
+  newConnection(conn: ConnectionT): Promise<void>;
   removeConnection(
-    conn: C,
+    conn: ConnectionT,
     onEmptyNamespace?: () => Promise<void>,
   ): Promise<void>;
   drainConnections(
@@ -243,45 +254,52 @@ export interface IConnectionsPool<
     message?: string,
     code?: number,
   ): Promise<void>;
-  getConnection(namespace: string, id: C['id']): Promise<C | undefined>;
+  getConnection(
+    namespace: string,
+    id: ConnectionT['id'],
+  ): Promise<ConnectionT | undefined>;
 
   close(
     namespace: string,
-    id: C['id'],
+    id: ConnectionT['id'],
     code?: number,
     reason?: string,
   ): Promise<void>;
   closeAll(namespace: string, code?: number, reason?: string): Promise<void>;
 
-  send<M = Message>(namespace: string, id: C['id'], message: M): Promise<void>;
-  sendJson<M = Message>(
+  send<M = MessageT>(
     namespace: string,
-    id: C['id'],
+    id: ConnectionT['id'],
     message: M,
   ): Promise<void>;
-  sendError<M = Message>(
+  sendJson<M = MessageT>(
+    namespace: string,
+    id: ConnectionT['id'],
+    message: M,
+  ): Promise<void>;
+  sendError<M = MessageT>(
     namepsace: string,
-    id: C['id'],
+    id: ConnectionT['id'],
     message: M,
     code?: number,
     reason?: string,
   ): Promise<void>;
 
-  broadcastMessage<M = Message>(
+  broadcastMessage<M = MessageT>(
     namespace: string,
     message: M,
-    exceptions?: C['id'][],
+    exceptions?: ConnectionT['id'][],
   ): Promise<void>;
-  broadcastJsonMessage<M = Message>(
+  broadcastJsonMessage<M = MessageT>(
     namespace: string,
     message: M,
-    exceptions?: C['id'][],
+    exceptions?: ConnectionT['id'][],
   ): Promise<void>;
-  broadcastError<M = Message>(
+  broadcastError<M = MessageT>(
     namespace: string,
     message: M,
     code?: number,
     reason?: string,
-    exceptions?: C['id'][],
+    exceptions?: ConnectionT['id'][],
   ): Promise<void>;
 }

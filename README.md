@@ -141,9 +141,13 @@ soketipfs is a monorepo, and it's composed of the following packages:
 - [connections](./packages/connections): Base implementation for Websocket connections handling
 - [gossiper](./packages/gossiper): Integration for the Gossip protocol, used to broadcast messages to all nodes in the network
 - [p2p](./packages/p2p): libp2p networking implementation using Helia
-- [protocols](./packages/protocols): implementation of various protocols, such as Pusher, Ably or MQTT
 - [routing](./packages/routing): Unified implementation for HTTP routing or handling custom events in the network
 - [server](./packages/server): Ready-to-go & customizable server implemenations for soketipfs
 - [utils](./packages/utils): Utility functions used across the packages
+
+#### Pusher
+
+- [pusher-apps](./packages/pusher-apps): Pusher Apps implementation to juggle with the apps definitions
+- [pusher-channels](./packages/pusher-channels): Pusher Channels implementation to handle channels and events
 
 Each abstraction has its own place in the soketipfs ecosystem, and they can be used independently or together.

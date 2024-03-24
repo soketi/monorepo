@@ -1,0 +1,127 @@
+version: '3'
+
+networks:
+  libp2p:
+    driver: bridge
+
+services:
+  soketi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - libp2p
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
+    environment:
+      DEBUG: 'libp2p:*'
+      SOKETI_P2P_SWARM_KEY: |-
+        /key/swarm/psk/1.0.0/
+        /base64/
+        eWPS6sIlS74fXQJgrxtzvBF+zqo7UUg61BYLfAUyJ1CM4/3GHHxCwO9tojUnaqgfMRuGo/n0Km18rtLXeAy5HA==
+    entrypoint:
+      - 'node'
+      - '--no-warnings'
+      - '--experimental-modules'
+      - '--es-module-specifier-resolution=node'
+      - '/app/dist/packages/cli/index.js'
+      - ipfs
+      - start
+    scale: 3
+    ports:
+      - 7001-7003:7001
+
+  kubo:
+    image: ipfs/kubo:release
+    container_name: kubo
+    volumes:
+      - ./.ipfs/kubo/data/ipfs:/data/ipfs
+      - ./.ipfs/kubo/ipfs:/ipfs
+      - ./.ipfs/kubo/ipns:/ipns
+      - ./.ipfs/kubo/init.d/001-initialize-kubo.sh:/container-init.d/001-initialize-kubo.sh
+    networks:
+      - libp2p
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
+    environment:
+      DEBUG: '*'
+      IPFS_PATH: /data/ipfs
+      IPFS_FD_MAX: 10000
+      # IPFS_HTTP_ROUTERS: 'http://soketi:7001'
+      IPFS_PROFILE: 'local-discovery'
+      LIBP2P_FORCE_PNET: '1'
+      IPFS_SWARM_KEY: |-
+        /key/swarm/psk/1.0.0/
+        /base64/
+        eWPS6sIlS74fXQJgrxtzvBF+zqo7UUg61BYLfAUyJ1CM4/3GHHxCwO9tojUnaqgfMRuGo/n0Km18rtLXeAy5HA==
+    ports:
+      - 4001:4001
+      - 4001:4001/udp
+      - 5001:5001
+      - 8080:8080
+      - 8081:8081
+
+  cluster:
+    image: ipfs/ipfs-cluster:latest
+    container_name: cluster
+    depends_on:
+      - kubo
+    networks:
+      - libp2p
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
+    environment:
+      DEBUG: '*'
+      CLUSTER_PEERNAME: cluster
+      CLUSTER_SECRET: 'c2b82fedbd69cc89b9fb691b4b4cc9b1966f5ec34717568673b6c19f8fa336b7'
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/kubo/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*' # Trust all peers in Cluster
+      CLUSTER_RESTAPI_HTTPLISTENMULTIADDRESS: /ip4/0.0.0.0/tcp/9094 # Expose API
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+      CLUSTER_ENABLERELAYHOP: 'true'
+    ports:
+      # Open API port (allows ipfs-cluster-ctl usage on host)
+      - '127.0.0.1:9094:9094'
+      # The cluster swarm port would need  to be exposed if this container
+      # was to connect to cluster peers on other hosts.
+      # But this is just a testing cluster.
+      - '9095:9095' # Cluster IPFS Proxy endpoint
+      - '9096:9096' # Cluster swarm endpoint
+    volumes:
+      - ./.ipfs/cluster/data:/data/ipfs-cluster
+
+  http_gateway:
+    image: ghcr.io/ipfs/helia-http-gateway:latest
+    container_name: http_gateway
+    networks:
+      - libp2p
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
+    ports:
+      - 9090:9090
+    volumes:
+      - ./.ipfs/http-gateway/data:/data
+    environment:
+      DEBUG: '*'
+      PORT: '9090'
+      USE_BITSWAP: true
+      USE_LIBP2P: true
+      USE_TRUSTLESS_GATEWAYS: true
+      USE_DELEGATED_ROUTING: true
+      TRUSTLESS_GATEWAYS: 'http://127.0.0.1:9090'
+      DELEGATED_ROUTING_V1_HOST: 'http://127.0.0.1:9090'
+      FILE_BLCOKSTORE_PATH: '/data/blockstore'
+      FILE_DATASTORE_PATH: '/data/datastore'
+      ECHO_HEADERS: true

@@ -1,12 +1,21 @@
 {
   "name": "@soketi/monorepo",
-  "version": "0.1.1",
+  "version": "0.1.4",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "cli": "./dist/packages/cli/index.js",
+    "dc:build": "docker-compose build"
+  },
   "private": true,
   "type": "module",
   "engines": {
     "node": ">=20.0.0 <21.0.0"
+  },
+  "optionalDependencies": {
+    "@nx/nx-linux-arm64-gnu": "17.3.0",
+    "@nx/nx-linux-arm64-musl": "17.3.0",
+    "@nx/nx-linux-x64-gnu": "17.3.0",
+    "@nx/nx-linux-x64-musl": "17.3.0"
   },
   "dependencies": {
     "@chainsafe/libp2p-gossipsub": "^11.1.0",
@@ -30,9 +39,10 @@
     "blockstore-core": "^4.3.10",
     "datastore-core": "^9.2.7",
     "helia": "^3.0.1",
+    "itty-router": "^4.0.27",
     "libp2p": "^1.2.1",
     "tslib": "^2.6.2",
-    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.39.0",
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.41.0",
     "uint8arrays": "4.0.10",
     "yargs": "^17.7.2"
   },
@@ -46,9 +56,11 @@
     "@nx/js": "17.3.0",
     "@nx/node": "17.3.0",
     "@nx/vite": "17.3.0",
+    "@nx/web": "17.3.0",
     "@nx/workspace": "17.3.0",
     "@swc-node/register": "~1.6.8",
     "@swc/core": "~1.3.107",
+    "@swc/helpers": "~0.5.2",
     "@types/jest": "^29.5.11",
     "@types/node": "18.19.10",
     "@types/yargs": "^17.0.32",

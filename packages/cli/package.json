@@ -3,7 +3,7 @@
   "version": "0.1.4",
   "dependencies": {
     "@soketi/server": "0.1.4",
-    "yargs": "*"
+    "yargs": "^17.7.2"
   },
   "type": "module",
   "main": "./index.js",
