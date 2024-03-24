@@ -111,6 +111,8 @@ If you discover any security related issues, please email <security@soketi.app> 
 
 ## 🎉 Credits
 
+Thank you to Bunny! 🌸
+
 - [Alex Renoki](https://github.com/rennokki)
 - [Pusher Protocol](https://pusher.com/docs/channels/library_auth_reference/pusher-websockets-protocol)
 - [All Contributors](../../contributors)
