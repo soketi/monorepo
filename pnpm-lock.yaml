@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@chainsafe/libp2p-gossipsub':
-    specifier: ^11.1.0
-    version: 11.1.0
+    specifier: ^13.0.0
+    version: 13.0.0
   '@chainsafe/libp2p-noise':
     specifier: ^14.1.0
     version: 14.1.0
@@ -1658,6 +1658,28 @@ packages:
       - supports-color
     dev: false
 
+  /@chainsafe/libp2p-gossipsub@13.0.0:
+    resolution: {integrity: sha512-2q+v429uZjMl6N3d+j9QCMj8YO0aiYvLSN1t0aTdpMXQHCHLJaaT9PtNn845B1Li7/uZjYESmikgVt8r7keH0w==}
+    engines: {npm: '>=8.7.0'}
+    dependencies:
+      '@libp2p/crypto': 4.0.1
+      '@libp2p/interface': 1.1.2
+      '@libp2p/interface-internal': 1.0.7
+      '@libp2p/peer-id': 4.0.5
+      '@libp2p/pubsub': 9.0.8
+      '@multiformats/multiaddr': 12.1.14
+      denque: 2.1.0
+      it-length-prefixed: 9.0.4
+      it-pipe: 3.0.1
+      it-pushable: 3.2.3
+      multiformats: 13.0.1
+      protons-runtime: 5.4.0
+      uint8arraylist: 2.4.8
+      uint8arrays: 5.0.1
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
   /@chainsafe/libp2p-noise@14.1.0:
     resolution: {integrity: sha512-uHmptoxgMsfDIP7cQMQ4Zp9+y27oON5+gloBLXi+7EJpMhyvo7tjafUxRILwLofzeAtfaF3ZHraoXRFUSbhK2Q==}
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
@@ -1680,8 +1702,6 @@ packages:
       uint8arraylist: 2.4.8
       uint8arrays: 5.0.1
       wherearewe: 2.0.1
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@chainsafe/libp2p-noise@15.0.0:
@@ -2088,8 +2108,6 @@ packages:
       interface-store: 5.1.7
       multiformats: 13.0.1
       progress-events: 1.0.0
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@humanwhocodes/config-array@0.11.14:
@@ -2508,8 +2526,6 @@ packages:
       protons-runtime: 5.2.2
       uint8arraylist: 2.4.8
       uint8arrays: 5.0.1
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@libp2p/crypto@4.0.1:
@@ -2520,7 +2536,7 @@ packages:
       '@noble/hashes': 1.3.3
       asn1js: 3.0.5
       multiformats: 13.0.1
-      protons-runtime: 5.2.2
+      protons-runtime: 5.4.0
       uint8arraylist: 2.4.8
       uint8arrays: 5.0.1
     transitivePeerDependencies:
@@ -2718,8 +2734,6 @@ packages:
       uint8-varint: 2.0.3
       uint8arraylist: 2.4.8
       uint8arrays: 5.0.1
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@libp2p/peer-collections@5.1.5:
@@ -2727,8 +2741,6 @@ packages:
     dependencies:
       '@libp2p/interface': 1.1.2
       '@libp2p/peer-id': 4.0.5
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@libp2p/peer-id-factory@4.0.5:
@@ -2760,8 +2772,6 @@ packages:
       '@libp2p/interface': 1.1.2
       multiformats: 13.0.1
       uint8arrays: 5.0.1
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@libp2p/peer-record@7.0.7:
@@ -2848,8 +2858,6 @@ packages:
       it-stream-types: 2.0.1
       prom-client: 15.1.0
       uint8arraylist: 2.4.8
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@libp2p/pubsub-peer-discovery@10.0.2:
@@ -9714,6 +9722,14 @@ packages:
   /protons-runtime@5.2.2:
     resolution: {integrity: sha512-o97rNPN9pE3cxOxjs/waZNRKlbY/DR11oc20rUvarWZgFzQLLLzJU0RFh5JPi6GJCN67VGVn9/FDIEtFblfB3A==}
     dependencies:
+      uint8arraylist: 2.4.8
+      uint8arrays: 5.0.1
+    dev: false
+
+  /protons-runtime@5.4.0:
+    resolution: {integrity: sha512-XfA++W/WlQOSyjUyuF5lgYBfXZUEMP01Oh1C2dSwZAlF2e/ZrMRPfWonXj6BGM+o8Xciv7w0tsRMKYwYEuQvaw==}
+    dependencies:
+      uint8-varint: 2.0.3
       uint8arraylist: 2.4.8
       uint8arrays: 5.0.1
     dev: false
