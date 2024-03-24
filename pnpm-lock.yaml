@@ -9,8 +9,8 @@ dependencies:
     specifier: ^11.1.0
     version: 11.1.0
   '@chainsafe/libp2p-noise':
-    specifier: ^14.1.0
-    version: 14.1.0
+    specifier: ^15.0.0
+    version: 15.0.0
   '@chainsafe/libp2p-yamux':
     specifier: ^6.0.1
     version: 6.0.1
@@ -1680,8 +1680,6 @@ packages:
       uint8arraylist: 2.4.8
       uint8arrays: 5.0.1
       wherearewe: 2.0.1
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@chainsafe/libp2p-noise@15.0.0:
@@ -2088,8 +2086,6 @@ packages:
       interface-store: 5.1.7
       multiformats: 13.0.1
       progress-events: 1.0.0
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@humanwhocodes/config-array@0.11.14:
@@ -2508,8 +2504,6 @@ packages:
       protons-runtime: 5.2.2
       uint8arraylist: 2.4.8
       uint8arrays: 5.0.1
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@libp2p/crypto@4.0.1:
@@ -2718,8 +2712,6 @@ packages:
       uint8-varint: 2.0.3
       uint8arraylist: 2.4.8
       uint8arrays: 5.0.1
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@libp2p/peer-collections@5.1.5:
@@ -2727,8 +2719,6 @@ packages:
     dependencies:
       '@libp2p/interface': 1.1.2
       '@libp2p/peer-id': 4.0.5
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@libp2p/peer-id-factory@4.0.5:
@@ -2760,8 +2750,6 @@ packages:
       '@libp2p/interface': 1.1.2
       multiformats: 13.0.1
       uint8arrays: 5.0.1
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@libp2p/peer-record@7.0.7:
@@ -2848,8 +2836,6 @@ packages:
       it-stream-types: 2.0.1
       prom-client: 15.1.0
       uint8arraylist: 2.4.8
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@libp2p/pubsub-peer-discovery@10.0.2:
