@@ -19,13 +19,23 @@ export class MicroWebsocketsRunner extends Runner {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     router.get<IRequest>('/stats', (request) => {
       return Response.json({
-        connections: [...this.instance.connections.connections.keys()],
+        namespaces: [...this.instance.connections.connections.keys()],
+        connections: [...this.instance.connections.connections].map(
+          ([namespace, connections]) => ({
+            namespace,
+            connections: [...connections].map(
+              ([, connection]) => connection.id,
+            ),
+          }),
+        ),
       });
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     router.get<IRequest>('/peers', async (request) => {
-      return Response.json(await this.instance.gossiper.peers());
+      return Response.json({
+        peers: await this.instance.gossiper.peers(),
+      });
     });
 
     return router;
@@ -39,138 +49,138 @@ export class MicroWebsocketsRunner extends Runner {
 
     // eslint-disable-next-line no-async-promise-executor
     return new Promise<void>(async (resolve) => {
-      this.server.ws<{ id: string; namespace: string }>(
-        '/namespace/:namespace',
-        {
-          upgrade: (res, req, context) => {
-            res.upgrade(
-              {
-                ip: ab2str(res.getRemoteAddressAsText()),
-                ip2: ab2str(res.getProxiedRemoteAddressAsText()),
-                namespace: req.getParameter(0),
-                id: this.instance.protocol?.generateId(),
-              },
-              req.getHeader('sec-websocket-key'),
-              req.getHeader('sec-websocket-protocol'),
-              req.getHeader('sec-websocket-extensions'),
-              context,
-            );
-          },
-          sendPingsAutomatically: true,
-          idleTimeout: 120,
-          maxPayloadLength: 16 * 1024 * 1024, // TODO: Configurable?
-          open: async (ws) => {
-            const { id, namespace } = ws.getUserData();
+      this.server.ws<{
+        id: string;
+        namespace: string;
+        ip: string;
+        ip2: string;
+      }>('/namespace/:namespace', {
+        upgrade: async (res, req, context) => {
+          res.upgrade(
+            {
+              ip: ab2str(res.getRemoteAddressAsText()),
+              ip2: ab2str(res.getProxiedRemoteAddressAsText()),
+              namespace: req.getParameter(0),
+              id: await this.instance.protocol?.generateId(),
+            },
+            req.getHeader('sec-websocket-key'),
+            req.getHeader('sec-websocket-protocol'),
+            req.getHeader('sec-websocket-extensions'),
+            context,
+          );
+        },
+        sendPingsAutomatically: true,
+        idleTimeout: 120,
+        maxPayloadLength: 16 * 1024 * 1024, // TODO: Configurable?
+        open: async (ws) => {
+          const { id, namespace } = ws.getUserData();
 
-            const connectionStub = new Connection(id, namespace, ws, {
-              close: async (code, reason) => {
-                try {
-                  ws.end(code, reason);
-                } catch (e) {
-                  //
+          const connectionStub = new Connection(id, namespace, ws, {
+            close: async (code, reason) => {
+              try {
+                ws.end(code, reason);
+              } catch (e) {
+                //
+              }
+            },
+            send: async (message) => {
+              ws.send(JSON.stringify(message), false, true);
+            },
+          });
+
+          const connection = await this.instance.createNewConnection(
+            connectionStub,
+          );
+
+          if (!this.instance.connections.hasNamespace(namespace)) {
+            // Subscribe to this namespace.
+            await this.instance.gossiper.subscribeToNamespace(
+              namespace,
+              async (data) => {
+                // In case a message was broadcasted by a connection on this namespace,
+                // we will be notified. This way, we can broadcast the message to our local connections too.
+                // We are 100% sure that the message was not sent from one of our connections, because
+                // the self-broadcast is disabled.
+                if (data.event === 'message:incoming') {
+                  const msg = ab2str(data.payload?.message as ArrayBuffer);
+
+                  this.instance.connections.broadcastJsonMessage(
+                    namespace,
+                    JSON.parse(msg),
+                  );
                 }
               },
-              send: async (message) => {
-                ws.send(JSON.stringify(message), false, true);
-              },
-            });
-
-            const connection = await this.instance.createNewConnection(
-              connectionStub,
             );
+          }
 
-            if (!this.instance.connections.hasNamespace(namespace)) {
-              // Subscribe to this namespace.
-              await this.instance.gossiper.subscribeToNamespace(
-                namespace,
-                async (data) => {
-                  // In case a message was broadcasted by a connection on this namespace,
-                  // we will be notified. This way, we can broadcast the message to our local connections too.
-                  // We are 100% sure that the message was not sent from one of our connections, because
-                  // the self-broadcast is disabled.
-                  if (data.event === 'message:incoming') {
-                    const msg = ab2str(data.payload?.message as ArrayBuffer);
-
-                    this.instance.connections.broadcastJsonMessage(
-                      namespace,
-                      JSON.parse(msg),
-                    );
-                  }
-                },
-              );
-            }
-
-            await this.instance.connections.newConnection(connection);
-            await this.instance.gossiper.announceNewConnection(namespace, id);
-          },
-          message: async (ws, message, isBinary) => {
-            const { id, namespace } = ws.getUserData();
-            const msg = ab2str(message);
-
-            this.instance.connections.broadcastMessage(namespace, msg, [id]);
-            this.instance.gossiper.announceNewMessage(namespace, id, msg);
-
-            console.log(
-              `[${id}] ${isBinary ? 'Binary' : 'Text'} message: ${msg}`,
-            );
-          },
-          ping: async (ws, message) => {
-            const { id, namespace } = ws.getUserData();
-
-            const connection = await this.instance.connections.getConnection(
-              namespace,
-              id,
-            );
-
-            if (!connection) {
-              return;
-            }
-
-            await connection.updateTimeout();
-            console.log(`[${id}] Ping: ${ab2str(message)}`);
-          },
-          pong: async (ws, message) => {
-            const { id, namespace } = ws.getUserData();
-
-            const connection = await this.instance.connections.getConnection(
-              namespace,
-              id,
-            );
-
-            if (!connection) {
-              return;
-            }
-
-            await connection.updateTimeout();
-            console.log(`[${id}] Pong: ${ab2str(message)}`);
-          },
-          close: async (ws, code, message) => {
-            const { id, namespace } = ws.getUserData();
-            const connection = await this.instance.connections.getConnection(
-              namespace,
-              id,
-            );
-
-            if (!connection) {
-              return;
-            }
-
-            await this.instance.connections.removeConnection(
-              connection,
-              async () => {
-                await this.instance.gossiper.unsubscribeFromNamespace(
-                  namespace,
-                );
-              },
-            );
-
-            console.warn(`[${id}] Closed: ${ab2str(message)} (${code})`);
-          },
-          dropped: () => {
-            //
-          },
+          await this.instance.connections.newConnection(connection);
+          await this.instance.gossiper.announceNewConnection(namespace, id);
         },
-      );
+        message: async (ws, message, isBinary) => {
+          const { id, namespace } = ws.getUserData();
+          const msg = ab2str(message);
+
+          this.instance.connections.broadcastMessage(namespace, msg, [id]);
+          this.instance.gossiper.announceNewMessage(namespace, id, msg);
+
+          console.log(
+            `[${id}] ${isBinary ? 'Binary' : 'Text'} message: ${msg}`,
+          );
+        },
+        ping: async (ws, message) => {
+          const { id, namespace } = ws.getUserData();
+
+          const connection = await this.instance.connections.getConnection(
+            namespace,
+            id,
+          );
+
+          if (!connection) {
+            return;
+          }
+
+          await connection.updateTimeout();
+          console.log(`[${id}] Ping: ${ab2str(message)}`);
+        },
+        pong: async (ws, message) => {
+          const { id, namespace } = ws.getUserData();
+
+          const connection = await this.instance.connections.getConnection(
+            namespace,
+            id,
+          );
+
+          if (!connection) {
+            return;
+          }
+
+          await connection.updateTimeout();
+          console.log(`[${id}] Pong: ${ab2str(message)}`);
+        },
+        close: async (ws, code, message) => {
+          const { id, namespace } = ws.getUserData();
+          const connection = await this.instance.connections.getConnection(
+            namespace,
+            id,
+          );
+
+          if (!connection) {
+            return;
+          }
+
+          await this.instance.connections.removeConnection(
+            connection,
+            async () => {
+              await this.instance.gossiper.unsubscribeFromNamespace(namespace);
+            },
+          );
+
+          console.warn(`[${id}] Closed: ${ab2str(message)} (${code})`);
+        },
+        dropped: () => {
+          //
+        },
+      });
 
       this.server.any('/*', async (res: HttpResponse, req: HttpRequest) => {
         res.onAborted(() => {

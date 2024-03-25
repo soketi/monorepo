@@ -1,11 +1,6 @@
 import type { AnyPusherEvent, PresenceMember } from '../';
 import { PusherUser } from './presence/pusher-user';
-import {
-  Connection,
-  NativeConnectionHandlers,
-  NativeWebsocket,
-  RemoteConnection,
-} from '@soketi/connections';
+import { Connection, RemoteConnection } from '@soketi/connections';
 
 export class PusherConnection<
   ID extends Connection['id'] = Connection['id'],
@@ -16,15 +11,6 @@ export class PusherConnection<
 
   userAuthenticationTimeout?: NodeJS.Timeout;
   user!: PusherUser<string>;
-
-  constructor(
-    public override id: ID,
-    public override namespace: string,
-    public override connection: NativeWebsocket,
-    public override handlers: NativeConnectionHandlers<Message>,
-  ) {
-    super(id, namespace, connection, handlers);
-  }
 
   async clearUserAuthenticationTimeout(): Promise<void> {
     if (this.userAuthenticationTimeout) {

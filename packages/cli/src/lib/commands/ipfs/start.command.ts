@@ -8,7 +8,7 @@ import { AvailableProtocols, PusherProtocol } from '@soketi/server';
 import { Router } from 'itty-router';
 
 export interface StartOptions {
-  protocol: AvailableProtocols;
+  enableProtocol: AvailableProtocols;
   serverHost: string;
   serverPort: number;
   wsRunner: 'uws';
@@ -77,7 +77,7 @@ export const builder: CommandModule['builder'] = (cli) =>
   });
 
 export const handler: StartCommandModule['handler'] = async ({
-  protocol,
+  enableProtocol,
   serverHost,
   serverPort,
   p2pSwarmKey,
@@ -108,10 +108,10 @@ export const handler: StartCommandModule['handler'] = async ({
   });
 
   if (wsRunner === 'uws') {
-    server.setRunner(new MicroWebsocketsRunner(server));
+    await server.setRunner(new MicroWebsocketsRunner(server));
   }
 
-  if (protocol === 'pusher') {
+  if (enableProtocol === 'pusher') {
     await server.setProtocol(new PusherProtocol(server));
   }
 

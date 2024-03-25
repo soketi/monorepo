@@ -23,7 +23,6 @@
       "@soketi/p2p": ["packages/p2p/src/index.ts"],
       "@soketi/pusher-apps": ["packages/pusher-apps/src/index.ts"],
       "@soketi/pusher-channels": ["packages/pusher-channels/src/index.ts"],
-      "@soketi/routing": ["packages/routing/src/index.ts"],
       "@soketi/server": ["packages/server/src/index.ts"],
       "@soketi/utils": ["packages/utils/src/index.ts"]
     }

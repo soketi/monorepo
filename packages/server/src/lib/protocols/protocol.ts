@@ -13,7 +13,7 @@ export abstract class Protocol<
   ErrorT = unknown,
 > implements IWebSocketServerHandler<MessageT, ConnectionT, ErrorT>
 {
-  constructor(protected instance: Server) {
+  constructor(public instance: Server) {
     //
   }
 
@@ -26,8 +26,8 @@ export abstract class Protocol<
   }
 
   async startup() {
-    await this.registerHttpRoutes(this.instance.httpRouter);
-    await this.registerWebsocketsRoutes(this.instance.wsRouter);
+    this.registerHttpRoutes(this.instance.httpRouter);
+    this.registerWebsocketsRoutes(this.instance.wsRouter);
   }
 
   async cleanup(): Promise<void> {
@@ -65,6 +65,6 @@ export abstract class Protocol<
   }
 
   async generateId(): Promise<ConnectionT['id']> {
-    return randomUUID().toString();
+    return randomUUID();
   }
 }
