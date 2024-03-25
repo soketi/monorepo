@@ -14,9 +14,9 @@ soketipfs is a framework for building distributed applications using Websockets.
 👀 = not sure, maybe in the future
 ```
 
-- [ ] Deployment
-  - [ ] 🧑‍💻 New Soketi CLI
-  - [ ] 🧑‍💻 Docker
+- [x] Deployment
+  - [x] 🧑‍💻 New Soketi CLI
+  - [x] 🧑‍💻 Docker
   - [ ] 👉 Kubernetes
   - [ ] 👉 Railway
 - [ ] Protocols
@@ -29,8 +29,8 @@ soketipfs is a framework for building distributed applications using Websockets.
   - [ ] 👀 AMQP Protocol
   - [ ] 👀 Centrifugo Protocol
   - [ ] 👀 STOMP Protocol
-- [ ] Discovery Mechanisms
-  - [ ] 🧑‍💻 IPFS
+- [-] Discovery Mechanisms
+  - [x] 🧑‍💻 IPFS
   - [ ] ⏳ Redis Pubsub
   - [ ] ⏳ NATS
 - [ ] Databases
@@ -38,15 +38,13 @@ soketipfs is a framework for building distributed applications using Websockets.
   - [ ] 👉 SQL via Knex
   - [ ] 👀 MongoDB
 
-## 🤝 Supporting
+## 🤝 Sponsors
 
-soketipfs is meant to be open source, forever and ever. It solves issues that many developers face - the one of wanting to be limitless while testing locally or performing benchmarks. More than that, itt is also suited for production usage, either it is public for your frontend applications or internal to your team.
-
-The frequency of releases and maintenance is based on the available time, which is tight as hell. Recently, there were issues with the maintenance and this caused infrequent updates, as well as infrequent support.
-
-To cover some of the expenses of handling new features or having to maintain the project, we would be more than happy if you can donate towards the goal. This will ensure that soketipfs will be taken care of at its full extent.
-
-**[💰 Sponsor the development via Github Sponsors](https://github.com/sponsors/rennokki)**
+<p align="center">
+  <a href="https://github.com/sponsors/rennokki">
+    <img src='https://cdn.jsdelivr.net/gh/rennokki/sponsorkit-assets@main/assets/sponsors.svg' alt="Logos from Sponsors" />
+  </a>
+</p>
 
 ## Features
 
