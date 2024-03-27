@@ -37,8 +37,7 @@ import {
   isPresenceChannel,
   isPrivateChannel,
 } from '@soketi/utils';
-import { Libp2p } from '@libp2p/interface';
-import { Helia } from 'helia';
+import { Server } from '@soketi/server';
 
 export class PusherConnectionsPool<
   C extends PusherConnection<
@@ -52,7 +51,8 @@ export class PusherConnectionsPool<
   readonly apps = new Map<App['id'], Required<App>>();
 
   constructor(
-    protected appsManager: AppsManager, // protected readonly node: Helia<Libp2p>,
+    protected appsManager: AppsManager,
+    protected readonly instance: Server,
   ) {
     super();
   }
@@ -110,7 +110,7 @@ export class PusherConnectionsPool<
   }
 
   async syncCurrentPeer(data: PeerData): Promise<void> {
-    // await this.node.libp2p.peerStore.merge(this.node.libp2p.peerId, data);
+    // await this.instance.gossiper.peers.merge(this.node.libp2p.peerId, data);
   }
 
   override async newConnection(conn: C): Promise<void> {
@@ -341,32 +341,32 @@ export class PusherConnectionsPool<
         },
       });
 
-      // if (await PusherUtils.isCachingChannel(channel)) {
-      //     this.sendMissedCacheIfExists(conn, channel);
-      // }
+      if (await PusherUtils.isCachingChannel(channel)) {
+          this.sendMissedCacheIfExists(conn, channel);
+      }
 
       return;
     }
 
     // Otherwise, prepare a response for the presence channel.
-    // conn.presence.set(channel, response.member as PresenceMember);
+    conn.presence.set(channel, response.member as PresenceMember);
 
     // TODO: Presence
     // If the member already exists in the channel, don't resend the member_added event.
-    /* if (!members.has(String(response.member?.user_id))) {
-            await this.broadcastToChannel<PusherMemberAdded>(channel, {
-                event: 'pusher_internal:member_added',
-                channel,
-                data: JSON.stringify({
-                    user_id: response.member?.user_id,
-                    user_info: response.member?.user_info,
-                }),
-            }, conn.id);
+    if (!members.has(String(response.member?.user_id))) {
+        await this.broadcastToChannel<PusherMemberAdded>(channel, {
+            event: 'pusher_internal:member_added',
+            channel,
+            data: JSON.stringify({
+                user_id: response.member?.user_id,
+                user_info: response.member?.user_info,
+            }),
+        }, conn.id);
 
-            members.set(String(response.member?.user_id), user_info);
+        members.set(String(response.member?.user_id), user_info);
 
-            // TODO: this.webhooks.sendMemberAdded(channel, member.user_id as string);
-        }
+        // TODO: this.webhooks.sendMemberAdded(channel, member.user_id as string);
+    }
 
         await conn.sendJson<PusherSubscriptionSucceeded>({
             event: 'pusher_internal:subscription_succeeded',
@@ -382,7 +382,7 @@ export class PusherConnectionsPool<
 
         if (await PusherUtils.isCachingChannel(channel)) {
             this.sendMissedCacheIfExists(conn, channel);
-        } */
+        }
   }
 
   async unsubscribeFromAllChannels(conn: C): Promise<void> {
@@ -462,12 +462,13 @@ export class PusherConnectionsPool<
   async handleClientEvent(
     conn: C,
     message: PusherClientEvent,
-    // announceChannelBroadcast: (
-    //   ...args: Parameters<PusherIpfs['announceChannelBroadcast']>
-    // ) => ReturnType<PusherIpfsGossiper['announceChannelBroadcast']>,
+    announceChannelBroadcast: (
+      ...args: Parameters<PusherIpfs['announceChannelBroadcast']>
+    ) => ReturnType<PusherIpfsGossiper['announceChannelBroadcast']>,
   ): Promise<any> {
-    // const app = await this.namespaceApp(conn.namespace);
-    /* if (!app) {
+    const app = await this.namespaceApp(conn.namespace);
+
+    if (!app) {
       conn.sendJson<PusherError>({
         event: 'pusher:error',
         data: {
@@ -477,9 +478,10 @@ export class PusherConnectionsPool<
       });
 
       return conn.close(4009, 'App not found.');
-    } */
-    // const { event, data, channel } = message;
-    /* if (!app.enableClientMessages) {
+    }
+
+    const { event, data, channel } = message;
+    if (!app.enableClientMessages) {
       return conn.sendJson<PusherError>({
         event: 'pusher:error',
         channel,
@@ -488,10 +490,11 @@ export class PusherConnectionsPool<
           message: `The app does not have client messaging enabled.`,
         },
       });
-    } */
+    }
+
     // Make sure the event name length is not too big.
-    // const maxEventnameLength = app.maxEventNameLength;
-    /* if (event.length > maxEventnameLength) {
+    const maxEventnameLength = app.maxEventNameLength;
+    if (event.length > maxEventnameLength) {
       return conn.sendJson<PusherError>({
         event: 'pusher:error',
         channel,
@@ -500,11 +503,12 @@ export class PusherConnectionsPool<
           message: `Event name is too long. Maximum allowed size is ${maxEventnameLength}.`,
         },
       });
-    } */
-    // const payloadSizeInKb = await dataToKilobytes(message.data);
-    // const maxPayloadSizeInKb = app.maxEventPayloadInKb;
+    }
+
     // Make sure the total payload of the message body is not too big.
-    /* if (payloadSizeInKb > maxPayloadSizeInKb) {
+    const payloadSizeInKb = await dataToKilobytes(message.data);
+    const maxPayloadSizeInKb = app.maxEventPayloadInKb;
+    if (payloadSizeInKb > maxPayloadSizeInKb) {
       return conn.sendJson<PusherError>({
         event: 'pusher:error',
         channel,
@@ -513,27 +517,33 @@ export class PusherConnectionsPool<
           message: `The event data should be less than ${maxPayloadSizeInKb} KB.`,
         },
       });
-    } */
-    // const canBroadcast = await this.isInLocalChannel(conn, channel);
-    /* if (!canBroadcast) {
+    }
+
+    const canBroadcast = await this.isInLocalChannel(conn, channel);
+    if (!canBroadcast) {
       return;
-    } */
+    }
     // TODO: Rate limiting
-    // let userId = conn.presence.has(channel) ? conn.presence.get(channel).user_id as string : null;
-    /* const eventMessage = {
+    let userId = conn.presence.has(channel)
+      ? (conn.presence.get(channel).user_id as string)
+      : null;
+
+    const eventMessage = {
       event,
       channel,
       data,
-      // ...userId ? { user_id: userId } : {},
-    }; */
+      ...(userId ? { user_id: userId } : {}),
+    };
+
     // Broadcast locally.
-    /* this.broadcastJsonMessageToChannel<PusherClientEvent>(
+    this.broadcastJsonMessageToChannel<PusherClientEvent>(
       app.id,
       eventMessage,
       [conn.id],
-    ); */
+    );
+
     // Announce via Pubsub
-    // announceChannelBroadcast(eventMessage, app.key, app.id, conn.id);
+    announceChannelBroadcast(eventMessage, app.key, app.id, conn.id);
     // TODO:
     // this.webhooks.sendClientEvent(
     //     channel, event, data, conn.id, userId
@@ -649,8 +659,7 @@ export class PusherConnectionsPool<
   }
 
   async getConnectionsCount(namespace: string): Promise<number> {
-    return 0;
-    /* const peers = await this.node.libp2p.peerStore.all({
+    const peers = await this..libp2p.peerStore.all({
       filters: [
         (peer) =>
           peer.tags.get(`pusher:app:${namespace}:important`)?.value === 1,
@@ -663,7 +672,7 @@ export class PusherConnectionsPool<
 
     return peers.reduce((total, peer) => {
       return total + Number(uint8ArrayToString(value(peer)));
-    }, 0); */
+    }, 0);
   }
 
   getLocalChannelConnections(namespace: string, channel: string): Set<C> {
@@ -679,8 +688,7 @@ export class PusherConnectionsPool<
   async getChannelsWithConnectionsCount(
     namespace: string,
   ): Promise<Map<string, number>> {
-    return new Map();
-    /* const peers = await this.node.libp2p.peerStore.all({
+    const peers = await this.node.libp2p.peerStore.all({
       filters: [(peer) => peer.tags.has(`app:${namespace}`)],
     });
 
@@ -701,12 +709,11 @@ export class PusherConnectionsPool<
       );
     }
 
-    return channelsWithConnections; */
+    return channelsWithConnections;
   }
 
   async getChannelConnectionsCount(namespace: string): Promise<number> {
-    return 0;
-    /* const peers = await this.node.libp2p.peerStore.all({
+    const peers = await this.node.libp2p.peerStore.all({
       filters: [(peer) => peer.tags.has(`app:${namespace}`)],
     });
 
@@ -717,10 +724,10 @@ export class PusherConnectionsPool<
 
     return peers.reduce((total, peer) => {
       return total + Number(uint8ArrayToString(value(peer)));
-    }, 0); */
+    }, 0);
   }
 
-  /* async getChannelMembers(namespace: string, forceLocal = false): Promise<Map<string, PusherPresence.PresenceMemberInfo>> {
+  async getChannelMembers(namespace: string, forceLocal = false): Promise<Map<string, PusherPresence.PresenceMemberInfo>> {
         if (forceLocal) {
             let connections = await this.getChannelConnections(channel, true);
             let members = new Map<string, PusherPresence.PresenceMemberInfo>();
@@ -748,9 +755,9 @@ export class PusherConnectionsPool<
         });
 
         return this.callMethodAggregators.getChannelMembers(gossipResponses, options);
-    } */
+    }
 
-  /* async getChannelMembersCount(channel: string, forceLocal = false): Promise<number> {
+  async getChannelMembersCount(channel: string, forceLocal = false): Promise<number> {
         if (forceLocal) {
             return (await this.getChannelMembers(channel, forceLocal)).size;
         }
@@ -766,9 +773,9 @@ export class PusherConnectionsPool<
         });
 
         return this.callMethodAggregators.getChannelMembersCount(gossipResponses, options);
-    } */
+    }
 
-  /* async terminateUserConnections(userId: PusherUserID, forceLocal = false): Promise<void> {
+  async terminateUserConnections(userId: PusherUserID, forceLocal = false): Promise<void> {
         if (forceLocal) {
             const connectionIds = this.users.get(userId.toString()) || new Set<string>();
 
@@ -794,9 +801,9 @@ export class PusherConnectionsPool<
 
         // Also terminate locally.
         this.terminateUserConnections(userId.toString(), true);
-    } */
+    }
 
-  /* async sendMissedCacheIfExists(conn: C, channel: string) {
+  async sendMissedCacheIfExists(conn: C, channel: string) {
         let cachedEvent = await this.brain.get(
             `app_${this.app.id}_channel_${channel}_cache_miss`,
         );
@@ -810,7 +817,7 @@ export class PusherConnectionsPool<
         } else {
             // TODO: Send webhook event.
         }
-    } */
+    }
 
   async getChannelManagerFor(
     channel: string,
@@ -827,149 +834,149 @@ export class PusherConnectionsPool<
     }
   }
 
-  /* get callMethodAggregators(): {
-        [method: string]: (
-            responses: Gossip.Response[],
-            options?: PusherGossip.GossipDataOptions,
-        ) => any;
-    } {
-        return {
-            getConnections: async (gossipResponses: Gossip.Response[]) => {
-                let localConns: Map<
-                    string,
-                    PusherConnection
-                    |PusherRemoteConnection
-                > = await this.getConnections(true);
+  get callMethodAggregators(): {
+    [method: string]: (
+      responses: Gossip.Response[],
+      options?: PusherGossip.GossipDataOptions,
+    ) => any;
+  } {
+    return {
+        getConnections: async (gossipResponses: Gossip.Response[]) => {
+            let localConns: Map<
+                string,
+                PusherConnection
+                |PusherRemoteConnection
+            > = await this.getConnections(true);
 
-                for await (let response of gossipResponses) {
-                    let { connections } = response as PusherGossip.GossipResponse;
+            for await (let response of gossipResponses) {
+                let { connections } = response as PusherGossip.GossipResponse;
 
-                    for await (let connection of connections) {
-                        localConns.set(connection.id, connection);
-                    }
+                for await (let connection of connections) {
+                    localConns.set(connection.id, connection);
                 }
+            }
 
-                return localConns;
-            },
-            isInChannel: async (gossipResponses: Gossip.Response[]) => {
-                for await (let response of gossipResponses) {
-                    let { exists } = response as PusherGossip.GossipResponse;
+            return localConns;
+        },
+        isInChannel: async (gossipResponses: Gossip.Response[]) => {
+            for await (let response of gossipResponses) {
+                let { exists } = response as PusherGossip.GossipResponse;
 
-                    if (exists) {
-                        return true;
-                    }
+                if (exists) {
+                    return true;
                 }
+            }
 
-                return false;
-            },
-            getConnectionsCount: async (gossipResponses: Gossip.Response[]) => {
-                let localConnectionsCount = await this.getConnectionsCount(true);
+            return false;
+        },
+        getConnectionsCount: async (gossipResponses: Gossip.Response[]) => {
+            let localConnectionsCount = await this.getConnectionsCount(true);
 
-                for await (let response of gossipResponses) {
-                    let { totalCount } = response as PusherGossip.GossipResponse;
-                    localConnectionsCount += totalCount;
-                }
+            for await (let response of gossipResponses) {
+                let { totalCount } = response as PusherGossip.GossipResponse;
+                localConnectionsCount += totalCount;
+            }
 
-                return localConnectionsCount;
-            },
-            getChannels: async (gossipResponses: Gossip.Response[]) => {
-                let localChannels = await this.getChannels(true);
+            return localConnectionsCount;
+        },
+        getChannels: async (gossipResponses: Gossip.Response[]) => {
+            let localChannels = await this.getChannels(true);
 
-                for await (let response of gossipResponses) {
-                    let { channels } = response as PusherGossip.GossipResponse;
+            for await (let response of gossipResponses) {
+                let { channels } = response as PusherGossip.GossipResponse;
 
-                    for await (let [channel, connections] of channels) {
-                        // In case we also have a channel stored, just merge the local channel connections
-                        // with the ones received, for the same channel.
-                        if (localChannels.has(channel)) {
-                            for await (let connection of connections) {
-                                localChannels.set(channel, localChannels.get(channel).add(connection));
-                            }
-                        } else {
-                            // Otherwise, create a new set in the request.
-                            localChannels.set(channel, new Set(connections));
+                for await (let [channel, connections] of channels) {
+                    // In case we also have a channel stored, just merge the local channel connections
+                    // with the ones received, for the same channel.
+                    if (localChannels.has(channel)) {
+                        for await (let connection of connections) {
+                            localChannels.set(channel, localChannels.get(channel).add(connection));
                         }
+                    } else {
+                        // Otherwise, create a new set in the request.
+                        localChannels.set(channel, new Set(connections));
                     }
                 }
+            }
 
-                return localChannels;
-            },
-            getChannelsWithConnectionsCount: async (gossipResponses: Gossip.Response[]) => {
-                let localList = await this.getChannelsWithConnectionsCount(true);
+            return localChannels;
+        },
+        getChannelsWithConnectionsCount: async (gossipResponses: Gossip.Response[]) => {
+            let localList = await this.getChannelsWithConnectionsCount(true);
 
-                for await (let response of gossipResponses) {
-                    let { channelsWithSocketsCount } = response as PusherGossip.GossipResponse;
+            for await (let response of gossipResponses) {
+                let { channelsWithSocketsCount } = response as PusherGossip.GossipResponse;
 
-                    for await (let [channel, connectionsCount] of channelsWithSocketsCount) {
-                        // In case we also have a channel stored, just merge the local channel connections
-                        // with the ones received, for the same channel.
-                        if (localList.has(channel)) {
-                            localList.set(channel, localList.get(channel) + connectionsCount);
-                        } else {
-                            // Otherwise, create a new set in the request.
-                            localList.set(channel, connectionsCount);
-                        }
+                for await (let [channel, connectionsCount] of channelsWithSocketsCount) {
+                    // In case we also have a channel stored, just merge the local channel connections
+                    // with the ones received, for the same channel.
+                    if (localList.has(channel)) {
+                        localList.set(channel, localList.get(channel) + connectionsCount);
+                    } else {
+                        // Otherwise, create a new set in the request.
+                        localList.set(channel, connectionsCount);
                     }
                 }
+            }
 
-                return localList;
-            },
-            getChannelConnections: async (gossipResponses: Gossip.Response[], options?: PusherGossip.GossipDataOptions) => {
-                let channelSockets = await this.getChannelConnections(options.channel, true);
+            return localList;
+        },
+        getChannelConnections: async (gossipResponses: Gossip.Response[], options?: PusherGossip.GossipDataOptions) => {
+            let channelSockets = await this.getChannelConnections(options.channel, true);
 
-                for await (let response of gossipResponses) {
-                    let { connections } = response as PusherGossip.GossipResponse;
+            for await (let response of gossipResponses) {
+                let { connections } = response as PusherGossip.GossipResponse;
 
-                    for await (let connection of connections) {
-                        channelSockets.set(connection.id, connection);
-                    }
+                for await (let connection of connections) {
+                    channelSockets.set(connection.id, connection);
                 }
+            }
 
-                return channelSockets;
-            },
-            getChannelConnectionsCount: async (gossipResponses: Gossip.Response[], options?: PusherGossip.GossipDataOptions) => {
-                let localChannelSocketsCount = await this.getChannelConnectionsCount(options.channel, true);
+            return channelSockets;
+        },
+        getChannelConnectionsCount: async (gossipResponses: Gossip.Response[], options?: PusherGossip.GossipDataOptions) => {
+            let localChannelSocketsCount = await this.getChannelConnectionsCount(options.channel, true);
 
-                for await (let response of gossipResponses) {
-                    let { totalCount } = response as PusherGossip.GossipResponse;
+            for await (let response of gossipResponses) {
+                let { totalCount } = response as PusherGossip.GossipResponse;
 
-                    localChannelSocketsCount += totalCount;
+                localChannelSocketsCount += totalCount;
+            }
+
+            return localChannelSocketsCount;
+        },
+        getChannelMembers: async (gossipResponses: Gossip.Response[], options?: PusherGossip.GossipDataOptions) => {
+            let localMembers = await this.getChannelMembers(options.channel, true);
+
+            for await (let response of gossipResponses) {
+                let { members } = response as PusherGossip.GossipResponse;
+
+                for await (let [memberId, memberInfo] of members) {
+                    localMembers.set(memberId, memberInfo);
                 }
+            }
 
-                return localChannelSocketsCount;
-            },
-            getChannelMembers: async (gossipResponses: Gossip.Response[], options?: PusherGossip.GossipDataOptions) => {
-                let localMembers = await this.getChannelMembers(options.channel, true);
+            return localMembers;
+        },
+        getChannelMembersCount: async (gossipResponses: Gossip.Response[], options?: PusherGossip.GossipDataOptions) => {
+            let localChannelMembersCount = await this.getChannelMembersCount(options.channel, true);
 
-                for await (let response of gossipResponses) {
-                    let { members } = response as PusherGossip.GossipResponse;
+            for await (let response of gossipResponses) {
+                let { totalCount } = response as PusherGossip.GossipResponse;
 
-                    for await (let [memberId, memberInfo] of members) {
-                        localMembers.set(memberId, memberInfo);
-                    }
-                }
+                localChannelMembersCount += totalCount;
+            }
 
-                return localMembers;
-            },
-            getChannelMembersCount: async (gossipResponses: Gossip.Response[], options?: PusherGossip.GossipDataOptions) => {
-                let localChannelMembersCount = await this.getChannelMembersCount(options.channel, true);
-
-                for await (let response of gossipResponses) {
-                    let { totalCount } = response as PusherGossip.GossipResponse;
-
-                    localChannelMembersCount += totalCount;
-                }
-
-                return localChannelMembersCount;
-            },
-            terminateUserConnections: async (gossipResponses: Gossip.Response[], options?: PusherGossip.GossipDataOptions) => {
-                //
-            },
-            send: async (gossipResponses: Gossip.Response[], options?: PusherGossip.GossipDataOptions) => {
-                //
-            },
-        };
-    }
+            return localChannelMembersCount;
+        },
+        terminateUserConnections: async (gossipResponses: Gossip.Response[], options?: PusherGossip.GossipDataOptions) => {
+            //
+        },
+        send: async (gossipResponses: Gossip.Response[], options?: PusherGossip.GossipDataOptions) => {
+            //
+        },
+    };
+  }
 
     get callMethodResponses(): { [method: string]: (options: PusherGossip.GossipDataOptions) => Promise<PusherGossip.GossipResponse> } {
         return {
@@ -1032,9 +1039,9 @@ export class PusherConnectionsPool<
                 };
             },
         }
-    } */
+    }
 
-  /* async callOthers(data: {
+  async callOthers(data: {
         topic: string;
         data: Gossip.Payload;
     }): Promise<Gossip.Response[]> {
@@ -1042,5 +1049,5 @@ export class PusherConnectionsPool<
             data.topic,
             data.data,
         );
-    } */
+    }
 }

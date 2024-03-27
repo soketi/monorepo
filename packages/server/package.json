@@ -7,7 +7,6 @@
     "@soketi/connections": "0.1.4",
     "@soketi/brain": "0.1.4",
     "@soketi/p2p": "0.1.4",
-    "@soketi/routing": "0.1.4",
     "@soketi/utils": "0.1.4",
     "@soketi/protocols": "0.1.4",
     "itty-router": "^4.0.27",
